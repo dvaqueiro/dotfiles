@@ -1,0 +1,186 @@
+set nocompatible              " be iMproved, required
+" filetype off                  " required
+let mapleader = "¡"
+
+noremap <Up> <Nop>
+noremap <Down> <Nop>
+noremap <Left> <Nop>
+noremap <Right> <Nop>
+
+function! BuildYCM(info)
+  if a:info.status == 'installed' || a:info.force
+    !./install.sh
+  endif
+endfunction
+
+call plug#begin('~/.vim/plugged')
+" Plugins
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'airblade/vim-gitgutter'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'tpope/vim-fugitive'
+"Plug 'shougo/neocomplete.vim'
+Plug 'Yggdroot/indentLine'
+Plug 'vim-vdebug/vdebug'
+Plug 'ludovicchabant/vim-gutentags'
+Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+Plug 'vim-syntastic/syntastic'
+Plug 'phpactor/phpactor'
+Plug 'tpope/vim-surround'
+Plug 'AndrewRadev/linediff.vim'
+Plug 'stephpy/vim-php-cs-fixer'
+Plug 'junegunn/seoul256.vim'
+Plug 'jiangmiao/auto-pairs'
+" Plug 'arnaud-lb/vim-php-namespace'
+" Javascript wolrld
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
+Plug 'posva/vim-vue'
+" Track the engine.
+Plug 'SirVer/ultisnips'
+" Snippets are separated from the engine. Add this if you want them:
+Plug 'honza/vim-snippets'
+Plug 'algotech/ultisnips-php'
+call plug#end()
+
+let g:gutentags_ctags_executable="ctags"
+" let g:gutentags_ctags_extra_args=['--languague=php']
+
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsSnippetDirectories = ['~/.vim/bundle/vim-snippets/UltiSnips', 'UltiSnips', 'my-snippets/UltiSnips']
+
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+filetype plugin on
+set omnifunc=syntaxcomplete#Complete
+"
+set number
+syntax on
+set expandtab 
+set tabstop=4 
+set softtabstop=4 
+set shiftwidth=4
+set autoindent 
+" set textwidth=80
+set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<,space:·
+set updatetime=300
+" colorscheme desert
+" colorscheme molokai
+set background=dark
+let g:solarized_termcolors=256
+"colorscheme solarized
+colorscheme seoul256
+set hlsearch
+" set undodir=~/.vim/undodir
+" set undofile
+let g:loaded_matchparen = 1
+let g:indentLine_setConceal = 1 
+
+" Show next matched string at the center of the screen
+noremap n nzz
+noremap N Nzz
+
+" turn hybrid line numbers on
+" set number relativenumber
+" set nu rnu
+
+" remove trailing whitespace when saving php files
+autocmd BufWritePre *.php :%s/\s\+$//e
+" set list
+
+"nnoremap <C-S-j> :m .+1<CR>==
+"nnoremap <C-S-k> :m .-2<CR>==
+"inoremap <C-S-j> :m .+1<CR>==gi
+"inoremap <C-S-k> :m .-2<CR>==gi
+"vnoremap <C-S-j> :m '>+1<CR>gv=gv
+"vnoremap <C-S-k> :m '<-2<CR>gv=gv
+nnoremap <F4> :set number!<CR>
+nnoremap <F3> :set hlsearch!<CR>
+nnoremap <F2> :set list!<CR>
+
+let g:airline#extensions#branch#enabled = 1
+let g:airline#extensions#tabline#enabled = 0
+"let g:airline_theme='dark'
+let g:airline_theme='solarized'
+let g:airline_powerline_fonts = 1
+
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+let g:vdebug_options= {
+\    "break_on_open" : 0,
+\    "watch_window_style" : 'compact',
+\    "path_maps" : {
+\        "/application" : "/home/dvaqueiro/dev/loteriahoy"
+\    },
+\    "window_arrangement" : ["DebuggerWatch"]
+\}
+let g:ctrlp_cmd = 'CtrlPMixed'
+let g:ctrlp_working_path_mode = 'ra' 
+let g:ctrlp_max_files = 0
+let g:ctrlp_max_depth = 40
+let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+let g:ctrlp_custom_ignore = {
+    \ 'dir':  '\v[\/]\.(git|hg|svn|node_modules|var)|(node_modules|var)$',
+    \ 'file': '\v\.(exe|so|dll)$',
+\ }
+
+command! JsonFormat :%!python -m json.tool
+
+" Highlight a column in csv text.
+" :Csv 1    " highlight first column
+" :Csv 12   " highlight twelfth column
+" :Csv 0    " switch off highlight
+function! CSVH(colnr)
+  if a:colnr > 1
+    let n = a:colnr - 1
+    execute 'match Keyword /^\([^,]*,\)\{'.n.'}\zs[^,]*/'
+    execute 'normal! 0'.n.'f,'
+  elseif a:colnr == 1
+    match Keyword /^[^,]*/
+    normal! 0
+  else
+    match
+  endif
+endfunction
+command! -nargs=1 Csv :call CSVH(<args>)
+
+" Syntastic
+let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd']
+let g:syntastic_php_phpcs_args='--standard=PSR2 -n'
+
+let g:syntastic_always_populate_loc_list = 0
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_aggregate_errors = 1
+
+autocmd FileType php setlocal omnifunc=phpactor#Complete
+
+" Include use statement
+nmap <Leader>u :call phpactor#UseAdd()<CR>
+" Invoke the context menu
+nmap <Leader>mm :call phpactor#ContextMenu()<CR>
+" Invoke the navigation menu
+nmap <Leader>nn :call phpactor#Navigate()<CR>
+" Goto definition of class or class member under the cursor
+nmap <Leader>o :call phpactor#GotoDefinition()<CR>
+" Transform the classes in the current file
+nmap <Leader>tt :call phpactor#Transform()<CR>
+" Generate a new class (replacing the current file)
+nmap <Leader>cc :call phpactor#ClassNew()<CR>
+" Extract expression (normal mode)
+nmap <silent><Leader>ee :call phpactor#ExtractExpression(v:false)<CR>
+" Extract expression from selection
+vmap <silent><Leader>ee :<C-U>call phpactor#ExtractExpression(v:true)<CR>
+" Extract method from selection
+vmap <silent><Leader>em :<C-U>call phpactor#ExtractMethod()<CR>
