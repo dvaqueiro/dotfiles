@@ -87,26 +87,28 @@ function installPhpAndComposer() {
 }
 
 function installNeovim() {
-    DEFAULT="y"
+    DEFAULT="n"
     read -p 'Install neovim? [Y/n]' PROCEED
     # adopt the default, if 'enter' given
     PROCEED="${PROCEED:-${DEFAULT}}"
     # change to lower case to simplify following if
     PROCEED="${PROCEED,,}"
-    if [ $PROCEED == 'n' ]
-    then
-        echo 'Skip install neovim'
-    else
-        echo "Installing neovim...";
+    if [ $PROCEED == 'y' ]; then
+        sudo apt-get install nodejs npm
+        sudo apt-get install universal-ctags
+        printGreenLine "Installing neovim..."
         sudo add-apt-repository ppa:neovim-ppa/stable
         sudo apt-get update
         sudo apt-get install neovim
-        # vim configuration
-        ln -sf ~/dev/dotfiles/.vim ~/.vim
+         vim configuration
+        cp -R ./.vim ~/.vim
 
-        echo "Installing vim plug";
+        printGreenLine "Installing vim plug";
         curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        cp config/init.vim ~/.config/nvim
+    else
+        printRedLine 'Skip install neovim'
     fi
 }
 
@@ -130,5 +132,5 @@ installOhMyZsh
 installAutoSuggestions
 installHstr
 installPhpAndComposer
-#installNeovim
+installNeovim
 #installMycli
