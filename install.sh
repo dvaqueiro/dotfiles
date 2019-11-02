@@ -4,6 +4,14 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
+function printRedLine() {
+    printf "${RED}$1${NC}\n"
+}
+
+function printGreenLine() {
+    printf "${GREEN}$1${NC}\n"
+}
+
 function installOhMyZsh() {
     DEFAULT="n"
     read -p 'Install Oh My Zsh? [y/N]' PROCEED
@@ -11,9 +19,8 @@ function installOhMyZsh() {
     PROCEED="${PROCEED:-${DEFAULT}}"
     # change to lower case to simplify following if
     PROCEED="${PROCEED,,}"
-    if [ $PROCEED == 'y' ]
-    then
-        printf "${GREEN}Installing Oh My Zsh...${NC}\n"
+    if [ $PROCEED == 'y' ]; then
+        printGreenLine "Installing Oh My Zsh..."
 	sudo apt-get install zsh curl wget
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
 	if [ ! -f ~/.zshrc_original ]; then
@@ -22,7 +29,45 @@ function installOhMyZsh() {
 	cp ./config/zshrc ~/.zshrc
 	sudo apt-get install fonts-powerline
     else
-        printf "${RED}Skip install Oh My Zsh${NC}\n"
+        printRedLine "Skip install Oh My Zsh"
+    fi
+}
+
+function installAutoSuggestions() {
+    DEFAULT="n"
+    read -p 'Install auto suggestions? [y/N]' PROCEED
+    # adopt the default, if 'enter' given
+    PROCEED="${PROCEED:-${DEFAULT}}"
+    # change to lower case to simplify following if
+    PROCEED="${PROCEED,,}"
+    if [ $PROCEED == 'y' ]; then
+	printGreenLine "Install zsh auto suggestions..."
+	printGreenLine "add plugins=(zsh-autosuggestions) to .zshr"
+        git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+    else
+        printRedLine "Skip install zsh auto suggestions"
+    fi
+}
+
+function installHstr() {
+    DEFAULT="n"
+    read -p 'Install hstr, a history improve? [y/N]' PROCEED
+    # adopt the default, if 'enter' given
+    PROCEED="${PROCEED:-${DEFAULT}}"
+    # change to lower case to simplify following if
+    PROCEED="${PROCEED,,}"
+    if [ $PROCEED == 'y' ]
+    then
+        printGreenLine "Install hstr, a history improve...."
+        git clone https://github.com/dvorka/hstr.git
+        sudo apt install automake gcc make libncursesw5-dev libreadline-dev
+        cd ./hstr
+        cd ./build/tarball && ./tarball-automake.sh && cd ../..
+        ./configure && make && sudo make install
+        cd ..
+        rm -Rf ./hstr
+    else
+        printRedLine "Skip install hstr"
     fi
 }
 
@@ -82,42 +127,9 @@ function installMycli() {
     fi
 }
 
-function installHstr() {
-    DEFAULT="y"
-    read -p 'Install hstr, a history improve? [Y/n]' PROCEED
-    # adopt the default, if 'enter' given
-    PROCEED="${PROCEED:-${DEFAULT}}"
-    # change to lower case to simplify following if
-    PROCEED="${PROCEED,,}"
-    if [ $PROCEED == 'n' ]
-    then
-        echo "Skip install hstr"
-    else
-        echo "Install hstr, a history improve...."
-        sudo add-apt-repository ppa:ultradvorka/ppa && sudo apt-get update && sudo apt-get install hstr && hstr --show-configuration >> ~/.zshrc && . ~/.zshrc
-    fi
-}
-
-function installAutoSuggestions() {
-    DEFAULT="y"
-    read -p 'Install auto suggestions? [Y/n]' PROCEED
-    # adopt the default, if 'enter' given
-    PROCEED="${PROCEED:-${DEFAULT}}"
-    # change to lower case to simplify following if
-    PROCEED="${PROCEED,,}"
-    if [ $PROCEED == 'n' ]
-    then
-        echo "Skip install zsh auto suggestions"
-    else
-        echo "Install zsh auto suggestions..."
-        echo "add plugins=(zsh-autosuggestions) to .zshr"
-        git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-    fi
-}
-
 installOhMyZsh
+installAutoSuggestions
+installHstr
 #installComposer
 #installNeovim
 #installMycli
-#installHstr
-#installAutoSuggestions
