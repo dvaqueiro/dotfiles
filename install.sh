@@ -1,5 +1,31 @@
 #!/bin/bash
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+function installOhMyZsh() {
+    DEFAULT="n"
+    read -p 'Install Oh My Zsh? [y/N]' PROCEED
+    # adopt the default, if 'enter' given
+    PROCEED="${PROCEED:-${DEFAULT}}"
+    # change to lower case to simplify following if
+    PROCEED="${PROCEED,,}"
+    if [ $PROCEED == 'y' ]
+    then
+        printf "${GREEN}Installing Oh My Zsh...${NC}\n"
+	sudo apt-get install zsh curl wget
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
+	if [ ! -f ~/.zshrc_original ]; then
+	    mv ~/.zshrc ~/.zshrc_original
+	fi
+	cp ./config/zshrc ~/.zshrc
+	sudo apt-get install fonts-powerline
+    else
+        printf "${RED}Skip install Oh My Zsh${NC}\n"
+    fi
+}
+
 function installComposer() {
     DEFAULT="y"
     read -p 'Install composer globally? [Y/n]' PROCEED
@@ -89,8 +115,9 @@ function installAutoSuggestions() {
     fi
 }
 
-installComposer
-installNeovim
-installMycli
-installHstr
-installAutoSuggestions
+installOhMyZsh
+#installComposer
+#installNeovim
+#installMycli
+#installHstr
+#installAutoSuggestions
