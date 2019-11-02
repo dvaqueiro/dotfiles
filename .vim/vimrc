@@ -7,12 +7,6 @@ noremap <Down> <Nop>
 noremap <Left> <Nop>
 noremap <Right> <Nop>
 
-function! BuildYCM(info)
-  if a:info.status == 'installed' || a:info.force
-    !./install.sh
-  endif
-endfunction
-
 call plug#begin('~/.vim/plugged')
 " Plugins
 Plug 'vim-airline/vim-airline'
@@ -20,20 +14,16 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'airblade/vim-gitgutter'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-fugitive'
-"Plug 'shougo/neocomplete.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'vim-vdebug/vdebug'
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
 Plug 'vim-syntastic/syntastic'
-Plug 'phpactor/phpactor'
+Plug 'phpactor/phpactor', { 'do': './composer install' }
 Plug 'tpope/vim-surround'
-Plug 'AndrewRadev/linediff.vim'
 Plug 'stephpy/vim-php-cs-fixer'
 Plug 'junegunn/seoul256.vim'
 Plug 'jiangmiao/auto-pairs'
-" Plug 'arnaud-lb/vim-php-namespace'
-" Javascript wolrld
+" Javascript world
 Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
 Plug 'posva/vim-vue'
@@ -42,20 +32,28 @@ Plug 'SirVer/ultisnips'
 " Snippets are separated from the engine. Add this if you want them:
 Plug 'honza/vim-snippets'
 Plug 'algotech/ultisnips-php'
+Plug 'nelsyeung/twig.vim'
+" Use release branch
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'chrisbra/csv.vim'
+Plug 'takac/vim-hardtime'
 call plug#end()
 
-let g:gutentags_ctags_executable="ctags"
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <C-cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+let g:gutentags_ctags_executable="ctags-u"
 " let g:gutentags_ctags_extra_args=['--languague=php']
 
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<c-j>"
-let g:UltiSnipsJumpForwardTrigger="<c-j>"
-let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
-let g:UltiSnipsSnippetDirectories = ['~/.vim/bundle/vim-snippets/UltiSnips', 'UltiSnips', 'my-snippets/UltiSnips']
+let g:UltiSnipsSnippetDirectories = ['~/.vim/plugged/vim-snippets/UltiSnips', 'UltiSnips', 'my-snippets/UltiSnips']
 
 filetype plugin indent on    " required
 " To ignore plugin indent changes, instead use:
@@ -74,9 +72,11 @@ set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<,space:·
 set updatetime=300
 " colorscheme desert
 " colorscheme molokai
-set background=dark
+" set background=ligh
+" set background=dark
 let g:solarized_termcolors=256
 "colorscheme solarized
+" colorscheme seoul256-light
 colorscheme seoul256
 set hlsearch
 " set undodir=~/.vim/undodir
@@ -89,8 +89,8 @@ noremap n nzz
 noremap N Nzz
 
 " turn hybrid line numbers on
-" set number relativenumber
-" set nu rnu
+"set number relativenumber
+"set nu rnu
 
 " remove trailing whitespace when saving php files
 autocmd BufWritePre *.php :%s/\s\+$//e
@@ -105,6 +105,7 @@ autocmd BufWritePre *.php :%s/\s\+$//e
 nnoremap <F4> :set number!<CR>
 nnoremap <F3> :set hlsearch!<CR>
 nnoremap <F2> :set list!<CR>
+vnoremap . :normal .<CR>
 
 let g:airline#extensions#branch#enabled = 1
 let g:airline#extensions#tabline#enabled = 0
@@ -119,13 +120,10 @@ endif
 let g:vdebug_options= {
 \    "break_on_open" : 0,
 \    "watch_window_style" : 'compact',
-\    "path_maps" : {
-\        "/application" : "/home/dvaqueiro/dev/loteriahoy"
-\    },
 \    "window_arrangement" : ["DebuggerWatch"]
 \}
 let g:ctrlp_cmd = 'CtrlPMixed'
-let g:ctrlp_working_path_mode = 'ra' 
+let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_max_files = 0
 let g:ctrlp_max_depth = 40
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
