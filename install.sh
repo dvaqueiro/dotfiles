@@ -56,8 +56,7 @@ function installHstr() {
     PROCEED="${PROCEED:-${DEFAULT}}"
     # change to lower case to simplify following if
     PROCEED="${PROCEED,,}"
-    if [ $PROCEED == 'y' ]
-    then
+    if [ $PROCEED == 'y' ]; then
         printGreenLine "Install hstr, a history improve...."
         git clone https://github.com/dvorka/hstr.git
         sudo apt install automake gcc make libncursesw5-dev libreadline-dev
@@ -71,19 +70,19 @@ function installHstr() {
     fi
 }
 
-function installComposer() {
-    DEFAULT="y"
-    read -p 'Install composer globally? [Y/n]' PROCEED
+function installPhpAndComposer() {
+    DEFAULT="n"
+    read -p 'Install php and composer globally? [y/N]' PROCEED
     # adopt the default, if 'enter' given
     PROCEED="${PROCEED:-${DEFAULT}}"
     # change to lower case to simplify following if
     PROCEED="${PROCEED,,}"
-    if [ $PROCEED == 'n' ]
-    then
-        echo 'Skip install composer globally'
-    else
-        echo 'Installing composer globally...'
+    if [ $PROCEED == 'y' ]; then
+        printGreenLine 'Installing php and composer globally...'
+        sudo apt-get install php
         curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+    else
+        printRedLine 'Skip install php and composer globally'
     fi
 }
 
@@ -130,6 +129,6 @@ function installMycli() {
 installOhMyZsh
 installAutoSuggestions
 installHstr
-#installComposer
+installPhpAndComposer
 #installNeovim
 #installMycli
