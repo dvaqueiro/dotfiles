@@ -124,13 +124,41 @@ function installMycli() {
     PROCEED="${PROCEED:-${DEFAULT}}"
     # change to lower case to simplify following if
     PROCEED="${PROCEED,,}"
-    if [ $PROCEED == 'y' ]
-    then
+    if [ $PROCEED == 'y' ]; then
         printGreenLine "Installing mycli..."
         sudo apt-get install python3-pip 
         pip3 install mycli
     else
-        printRedLine 'Skip install install mycli'
+        printRedLine 'Skip install mycli'
+    fi
+}
+
+function installDocker() {
+    DEFAULT="n"
+    read -p 'Install Docker? [y/N]' PROCEED
+    # adopt the default, if 'enter' given
+    PROCEED="${PROCEED:-${DEFAULT}}"
+    # change to lower case to simplify following if
+    PROCEED="${PROCEED,,}"
+    if [ $PROCEED == 'y' ]; then
+        printGreenLine "Installing Docker..."
+        sudo apt-get update
+        sudo apt-get install \
+            apt-transport-https \
+            ca-certificates \
+            curl \
+            gnupg-agent \
+            software-properties-common
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo apt-key fingerprint 0EBFCD88
+        sudo add-apt-repository \
+            "deb [arch=amd64] https://download.docker.com/linux/ubuntu disco stable"
+            #"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        sudo apt-get update
+        sudo apt-get install docker-ce docker-ce-cli containerd.io
+        sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    else
+        printRedLine 'Skip install Docker'
     fi
 }
 
@@ -141,3 +169,4 @@ installHstr
 installPhpAndComposer
 installNeovim
 installMycli
+installDocker
