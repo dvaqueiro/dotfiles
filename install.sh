@@ -162,6 +162,22 @@ function installDocker() {
     fi
 }
 
+function installMycli() {
+    DEFAULT="n"
+    read -p 'Install kubectl? [y/N]' PROCEED
+    # adopt the default, if 'enter' given
+    PROCEED="${PROCEED:-${DEFAULT}}"
+    # change to lower case to simplify following if
+    PROCEED="${PROCEED,,}"
+    if [ $PROCEED == 'y' ]; then
+        printGreenLine "Installing kubectl..."
+        sudo snap install kubectl --classic
+        sudo snap install helm --classic
+    else
+        printRedLine 'Skip install kubectl'
+    fi
+}
+
 copyLocalBin
 installOhMyZsh
 installAutoSuggestions
