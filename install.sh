@@ -12,6 +12,11 @@ function printGreenLine() {
     printf "${GREEN}$1${NC}\n"
 }
 
+function copyLocalBin() {
+    printGreenLine "Coping local bin files..."
+    cp -R ./bin/* ~/.local/bin
+}
+
 function installOhMyZsh() {
     DEFAULT="n"
     read -p 'Install Oh My Zsh? [y/N]' PROCEED
@@ -21,13 +26,13 @@ function installOhMyZsh() {
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
         printGreenLine "Installing Oh My Zsh..."
-	sudo apt-get install zsh curl wget
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
-	if [ ! -f ~/.zshrc_original ]; then
-	    mv ~/.zshrc ~/.zshrc_original
-	fi
-	cp ./config/zshrc ~/.zshrc
-	sudo apt-get install fonts-powerline
+        sudo apt-get install zsh curl wget
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
+        if [ ! -f ~/.zshrc_original ]; then
+            mv ~/.zshrc ~/.zshrc_original
+        fi
+        cp ./config/zshrc ~/.zshrc
+        sudo apt-get install fonts-powerline
     else
         printRedLine "Skip install Oh My Zsh"
     fi
@@ -41,8 +46,8 @@ function installAutoSuggestions() {
     # change to lower case to simplify following if
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
-	printGreenLine "Install zsh auto suggestions..."
-	printGreenLine "add plugins=(zsh-autosuggestions) to .zshr"
+        printGreenLine "Install zsh auto suggestions..."
+        printGreenLine "add plugins=(zsh-autosuggestions) to .zshr"
         git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
     else
         printRedLine "Skip install zsh auto suggestions"
@@ -100,7 +105,7 @@ function installNeovim() {
         sudo add-apt-repository ppa:neovim-ppa/stable
         sudo apt-get update
         sudo apt-get install neovim
-         vim configuration
+        vim configuration
         cp -R ./.vim ~/.vim
 
         printGreenLine "Installing vim plug";
@@ -113,24 +118,26 @@ function installNeovim() {
 }
 
 function installMycli() {
-    DEFAULT="y"
-    read -p 'Install mycli? [Y/n]' PROCEED
+    DEFAULT="n"
+    read -p 'Install mycli? [y/N]' PROCEED
     # adopt the default, if 'enter' given
     PROCEED="${PROCEED:-${DEFAULT}}"
     # change to lower case to simplify following if
     PROCEED="${PROCEED,,}"
-    if [ $PROCEED == 'n' ]
+    if [ $PROCEED == 'y' ]
     then
-        echo 'Skip install install mycli'
+        printGreenLine "Installing mycli..."
+        sudo apt-get install python3-pip 
+        pip3 install mycli
     else
-        echo "Installing mycli..."
-        pip install mycli
+        printRedLine 'Skip install install mycli'
     fi
 }
 
+copyLocalBin
 installOhMyZsh
 installAutoSuggestions
 installHstr
 installPhpAndComposer
 installNeovim
-#installMycli
+installMycli
