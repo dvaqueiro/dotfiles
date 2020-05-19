@@ -157,6 +157,8 @@ function installDocker() {
         sudo apt-get update
         sudo apt-get install docker-ce docker-ce-cli containerd.io
         sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo groupadd docker
+        sudo usermod -aG docker $USER
     else
         printRedLine 'Skip install Docker'
     fi
