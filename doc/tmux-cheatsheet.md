@@ -25,6 +25,7 @@
 ### New Window
 
 * `<C-a>c` (`:neww [-n name] [cmd]`) - new window
+* :new-window -a - add window after current
 
 ### Cursor Movement
 

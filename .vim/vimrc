@@ -11,6 +11,7 @@ call plug#begin('~/.vim/plugged')
 " Plugins
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'itchyny/lightline.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-fugitive'
@@ -18,11 +19,13 @@ Plug 'Yggdroot/indentLine'
 Plug 'vim-vdebug/vdebug'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'vim-syntastic/syntastic'
-Plug 'phpactor/phpactor', { 'do': './composer install' }
+Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install --no-dev -o'}
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
 Plug 'stephpy/vim-php-cs-fixer'
 Plug 'junegunn/seoul256.vim'
 Plug 'jiangmiao/auto-pairs'
+Plug 'AndrewRadev/splitjoin.vim'
 " Javascript world
 Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
@@ -37,11 +40,25 @@ Plug 'nelsyeung/twig.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'chrisbra/csv.vim'
 Plug 'takac/vim-hardtime'
+Plug 'dense-analysis/ale'
 call plug#end()
 
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <C-cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+let g:ale_linter_aliases = {'vue': ['vue', 'javascript']}
+let g:ale_linters = {
+\ 'javascript': ['eslint'],
+\ 'vue': ['eslint', 'vls'],
+\ 'typescript': ['tsserver', 'tslint'],
+\ 'php': [],
+\}
+
+let g:netrw_banner = 0
+" let g:netrw_browse_split = 4
+let g:netrw_liststyle = 4
+"let g:netrw_winsize = 20
 
 let g:gutentags_ctags_executable="ctags-u"
 " let g:gutentags_ctags_extra_args=['--languague=php']
@@ -62,11 +79,14 @@ set omnifunc=syntaxcomplete#Complete
 "
 set number
 syntax on
-set expandtab 
-set tabstop=4 
-set softtabstop=4 
+set expandtab
+set tabstop=4
+set softtabstop=4
 set shiftwidth=4
-set autoindent 
+set autoindent
+"set cursorline
+"set cursorcolumn
+set ruler
 " set textwidth=80
 set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<,space:·
 set updatetime=300
@@ -82,7 +102,8 @@ set hlsearch
 " set undodir=~/.vim/undodir
 " set undofile
 let g:loaded_matchparen = 1
-let g:indentLine_setConceal = 1 
+let g:indentLine_setConceal = 1
+set ignorecase
 
 " Show next matched string at the center of the screen
 noremap n nzz
@@ -90,11 +111,11 @@ noremap N Nzz
 
 " turn hybrid line numbers on
 "set number relativenumber
-"set nu rnu
+" set nu rnu
 
 " remove trailing whitespace when saving php files
-autocmd BufWritePre *.php :%s/\s\+$//e
-" set list
+" autocmd BufWritePre *.php :%s/\s\+$//e
+autocmd BufWritePre * %s/\s\+$//e
 
 "nnoremap <C-S-j> :m .+1<CR>==
 "nnoremap <C-S-k> :m .-2<CR>==
@@ -107,15 +128,16 @@ nnoremap <F3> :set hlsearch!<CR>
 nnoremap <F2> :set list!<CR>
 vnoremap . :normal .<CR>
 
-let g:airline#extensions#branch#enabled = 1
-let g:airline#extensions#tabline#enabled = 0
-"let g:airline_theme='dark'
-let g:airline_theme='solarized'
-let g:airline_powerline_fonts = 1
+let g:airline_disable_statusline = 1
+"let g:airline#extensions#branch#enabled = 1
+"let g:airline#extensions#tabline#enabled = 0
+""let g:airline_theme='dark'
+"let g:airline_theme='solarized'
+"let g:airline_powerline_fonts = 1
 
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-endif
+"if !exists('g:airline_symbols')
+    "let g:airline_symbols = {}
+"endif
 
 let g:vdebug_options= {
 \    "break_on_open" : 0,
@@ -155,6 +177,7 @@ command! -nargs=1 Csv :call CSVH(<args>)
 " Syntastic
 let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd']
 let g:syntastic_php_phpcs_args='--standard=PSR2 -n'
+let g:syntastic_php_phpmd_post_args = 'cleancode,codesize,controversial,design,unusedcode'
 
 let g:syntastic_always_populate_loc_list = 0
 let g:syntastic_auto_loc_list = 0
