@@ -1,2 +1,2 @@
-setlocal tabstop=4
-setlocal shiftwidth=4
+setlocal shiftwidth=2 softtabstop=2 expandtab
+set list

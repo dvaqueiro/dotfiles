@@ -1,5 +1,20 @@
-snippet aut "Comment"
+snippet aut "Author Comment"
 /**
  * @author <dvaqueiro at boardfy dot com>
  */
+endsnippet
+
+snippet dump "Symfony VarDumper" b
+\Symfony\Component\VarDumper\VarDumper::dump(${1});
+endsnippet
+
+snippet dbal-trans "dbal transaction" b
+$this->connection->beginTransaction();
+try {
+	${1}
+} catch (\Exception $exc) {
+	$this->connection->rollBack();
+	throw $exc;
+}
+$this->connection->commit();
 endsnippet
