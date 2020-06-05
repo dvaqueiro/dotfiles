@@ -8,7 +8,7 @@ export ZSH="/home/dvaqueiro/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="agnoster"
+ZSH_THEME="robbyrussell"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -98,12 +98,6 @@ fi
 alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-prompt_context() {
-  if [[ "$USER" != "$DEFAULT_USER" || -n "$SSH_CLIENT" ]]; then
-    #prompt_segment black default "%(!.%{%F{yellow}%}.)$USER"
-    prompt_segment black default "%(!.%{%F{yellow}%}.)%D{%L:%M:%S}"
-  fi
-}
 # alias util='kubectl get nodes --no-headers | awk '\''{print $1}'\'' | xargs -I {} sh -c '\''echo {} ; kubectl describe node {} | grep Allocated -A 5 | grep -ve Event -ve Allocated -ve percent -ve -- ; echo '\'''
 
 # Get CPU request total (we x20 because because each m3.large has 2 vcpus (2000m) )
@@ -112,12 +106,8 @@ prompt_context() {
 # Get mem request total (we x75 because because each m3.large has 7.5G ram )
 # alias memalloc='util | grep % | awk '\''{print $5}'\'' | awk '\''{ sum += $1 } END { if (NR > 0) { print sum/(NR*75), "%\n" } }'\'''
 
-# HSTR configuration
-alias hh=hstr                    # hh to be alias for hstr
 export HISTFILE=~/.zsh_history  # ensure history file visibility
 export HISTSIZE=9000
-export HSTR_CONFIG=hicolor        # get more colors
-bindkey -s "\C-r" "\eqhstr\n"     # bind hstr to Ctrl-r (for Vi mode check doc)
 
 export LESS="-XFR"
 export PATH="$HOME/.symfony/bin:$PATH"
@@ -130,3 +120,9 @@ export DEVOPS_PATH=/home/dvaqueiro/projects/devops
 # --follow: Follow symlinks
 # --glob: Additional conditions for search (in this case ignore everything in the .git/ folder)
 export FZF_DEFAULT_COMMAND='rg --files --ignore --hidden --follow --glob "!.git/*"'
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+case $- in *i*)
+    [ -z "$TMUX" ] && exec tmux
+esac

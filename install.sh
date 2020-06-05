@@ -14,7 +14,7 @@ function printGreenLine() {
 
 function copyLocalBin() {
     printGreenLine "Coping local bin files..."
-    cp -R ./bin/* ~/.local/bin
+    mkdir -p ~/.local/bin && cp -R ./bin/* ~/.local/bin
 }
 
 function installOhMyZsh() {
@@ -26,13 +26,14 @@ function installOhMyZsh() {
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
         printGreenLine "Installing Oh My Zsh..."
-        sudo apt-get install zsh curl wget
+        sudo apt-get install -y zsh curl wget
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
         if [ ! -f ~/.zshrc_original ]; then
             mv ~/.zshrc ~/.zshrc_original
         fi
         cp ./config/zshrc ~/.zshrc
-        sudo apt-get install fonts-powerline
+        sudo apt-get install -y fonts-powerline
+	chsh -s /usr/bin/zsh
     else
         printRedLine "Skip install Oh My Zsh"
     fi
@@ -54,24 +55,19 @@ function installAutoSuggestions() {
     fi
 }
 
-function installHstr() {
+function installFzf() {
     DEFAULT="n"
-    read -p 'Install hstr, a history improve? [y/N]' PROCEED
+    read -p 'Install fzf? [y/N]' PROCEED
     # adopt the default, if 'enter' given
     PROCEED="${PROCEED:-${DEFAULT}}"
     # change to lower case to simplify following if
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
-        printGreenLine "Install hstr, a history improve...."
-        git clone https://github.com/dvorka/hstr.git
-        sudo apt install automake gcc make libncursesw5-dev libreadline-dev
-        cd ./hstr
-        cd ./build/tarball && ./tarball-automake.sh && cd ../..
-        ./configure && make && sudo make install
-        cd ..
-        rm -Rf ./hstr
+        printGreenLine "Install fzf, a history improve...."
+        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+        ~/.fzf/install
     else
-        printRedLine "Skip install hstr"
+        printRedLine "Skip install fzf"
     fi
 }
 
@@ -84,7 +80,7 @@ function installPhpAndComposer() {
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
         printGreenLine 'Installing php and composer globally...'
-        sudo apt-get install php
+        sudo apt-get install -y php
         curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
     else
         printRedLine 'Skip install php and composer globally'
@@ -99,19 +95,19 @@ function installNeovim() {
     # change to lower case to simplify following if
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
-        sudo apt-get install nodejs npm
-        sudo apt-get install universal-ctags
+        curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        sudo apt-get install -y universal-ctags
         printGreenLine "Installing neovim..."
         sudo add-apt-repository ppa:neovim-ppa/stable
         sudo apt-get update
-        sudo apt-get install neovim
-        vim configuration
+        sudo apt-get install -y neovim
         cp -R ./.vim ~/.vim
 
         printGreenLine "Installing vim plug";
         curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-        cp config/init.vim ~/.config/nvim
+        cp config/init.vim ~/.config/nvim/
     else
         printRedLine 'Skip install neovim'
     fi
@@ -126,8 +122,8 @@ function installMycli() {
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
         printGreenLine "Installing mycli..."
-        sudo apt-get install python3-pip 
-        pip3 install mycli
+        sudo apt-get install -y python3-pip
+        pip3 install -y mycli
     else
         printRedLine 'Skip install mycli'
     fi
@@ -143,7 +139,7 @@ function installDocker() {
     if [ $PROCEED == 'y' ]; then
         printGreenLine "Installing Docker..."
         sudo apt-get update
-        sudo apt-get install \
+        sudo apt-get install -y \
             apt-transport-https \
             ca-certificates \
             curl \
@@ -164,7 +160,7 @@ function installDocker() {
     fi
 }
 
-function installMycli() {
+function installKubectl() {
     DEFAULT="n"
     read -p 'Install kubectl? [y/N]' PROCEED
     # adopt the default, if 'enter' given
@@ -173,8 +169,23 @@ function installMycli() {
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
         printGreenLine "Installing kubectl..."
-        sudo snap install kubectl --classic
+        sudo snap install kubectl --classic &&
         sudo snap install helm --classic
+    else
+        printRedLine 'Skip install kubectl'
+    fi
+}
+
+function installTmux() {
+    DEFAULT="n"
+    read -p 'Install tmux? [y/N]' PROCEED
+    # adopt the default, if 'enter' given
+    PROCEED="${PROCEED:-${DEFAULT}}"
+    # change to lower case to simplify following if
+    PROCEED="${PROCEED,,}"
+    if [ $PROCEED == 'y' ]; then
+        printGreenLine "Installing kubectl..."
+        sudo apt install -y tmux
     else
         printRedLine 'Skip install kubectl'
     fi
@@ -183,8 +194,9 @@ function installMycli() {
 copyLocalBin
 installOhMyZsh
 installAutoSuggestions
-installHstr
+installFzf
 installPhpAndComposer
 installNeovim
 installMycli
 installDocker
+installKubectl
