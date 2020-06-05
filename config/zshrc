@@ -1,5 +1,5 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/.local/bin:/usr/local/bin:$PATH
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="/home/dvaqueiro/.oh-my-zsh"
@@ -8,7 +8,6 @@ export ZSH="/home/dvaqueiro/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-# ZSH_THEME="robbyrussell"
 ZSH_THEME="agnoster"
 
 # Set list of themes to pick from when loading at random
@@ -65,9 +64,6 @@ ZSH_THEME="agnoster"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
     git
-    composer
-    docker-compose
-    docker
     zsh-autosuggestions
 )
 
@@ -81,11 +77,11 @@ source $ZSH/oh-my-zsh.sh
 # export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+if [[ -n $SSH_CONNECTION ]]; then
+   export EDITOR='vim'
+else
+   export EDITOR='mvim'
+fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -99,17 +95,38 @@ source $ZSH/oh-my-zsh.sh
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
-# alias zshconfig="mate ~/.zshrc"
+alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
 prompt_context() {
   if [[ "$USER" != "$DEFAULT_USER" || -n "$SSH_CLIENT" ]]; then
-    prompt_segment black default "%(!.%{%F{yellow}%}.)[%D{%y-%f-%m}T%D{%L:%M:%S}]"
+    #prompt_segment black default "%(!.%{%F{yellow}%}.)$USER"
+    prompt_segment black default "%(!.%{%F{yellow}%}.)%D{%L:%M:%S}"
   fi
 }
-# LS_COLORS=rs=0:di=01:'ow=37;42:'
+# alias util='kubectl get nodes --no-headers | awk '\''{print $1}'\'' | xargs -I {} sh -c '\''echo {} ; kubectl describe node {} | grep Allocated -A 5 | grep -ve Event -ve Allocated -ve percent -ve -- ; echo '\'''
 
-# HSTR configuration - add this to ~/.bashrc
+# Get CPU request total (we x20 because because each m3.large has 2 vcpus (2000m) )
+# alias cpualloc='util | grep % | awk '\''{print $1}'\'' | awk '\''{ sum += $1 } END { if (NR > 0) { print sum/(NR*20), "%\n" } }'\'''
+
+# Get mem request total (we x75 because because each m3.large has 7.5G ram )
+# alias memalloc='util | grep % | awk '\''{print $5}'\'' | awk '\''{ sum += $1 } END { if (NR > 0) { print sum/(NR*75), "%\n" } }'\'''
+
+# HSTR configuration
 alias hh=hstr                    # hh to be alias for hstr
 export HISTFILE=~/.zsh_history  # ensure history file visibility
+export HISTSIZE=9000
 export HSTR_CONFIG=hicolor        # get more colors
 bindkey -s "\C-r" "\eqhstr\n"     # bind hstr to Ctrl-r (for Vi mode check doc)
+
+export LESS="-XFR"
+export PATH="$HOME/.symfony/bin:$PATH"
+
+export DEVOPS_PATH=/home/dvaqueiro/projects/devops
+
+# --files: List files that would be searched but do not search
+# --no-ignore: Do not respect .gitignore, etc...
+# --hidden: Search hidden files and folders
+# --follow: Follow symlinks
+# --glob: Additional conditions for search (in this case ignore everything in the .git/ folder)
+export FZF_DEFAULT_COMMAND='rg --files --ignore --hidden --follow --glob "!.git/*"'
