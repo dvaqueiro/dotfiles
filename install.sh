@@ -199,8 +199,9 @@ function installAlacritty() {
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
         printGreenLine "Installing alacritty..."
+        sudo apt-get install -y fonts-hack-ttf
         sudo add-apt-repository ppa:mmstick76/alacritty
-        sudo apt-get install alacritty
+        sudo apt-get install -y alacritty
     else
         printRedLine 'Skip install alacritty'
     fi
