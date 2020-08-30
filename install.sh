@@ -122,8 +122,7 @@ function installMycli() {
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
         printGreenLine "Installing mycli..."
-        sudo apt-get install -y python3-pip
-        pip3 install -y mycli
+        sudo apt install -y mycli
     else
         printRedLine 'Skip install mycli'
     fi
@@ -191,13 +190,29 @@ function installTmux() {
     fi
 }
 
+function installAlacritty() {
+    DEFAULT="n"
+    read -p 'Install alacritty? [y/N]' PROCEED
+    # adopt the default, if 'enter' given
+    PROCEED="${PROCEED:-${DEFAULT}}"
+    # change to lower case to simplify following if
+    PROCEED="${PROCEED,,}"
+    if [ $PROCEED == 'y' ]; then
+        printGreenLine "Installing alacritty..."
+        sudo add-apt-repository ppa:mmstick76/alacritty
+        sudo apt-get install alacritty
+    else
+        printRedLine 'Skip install alacritty'
+    fi
+}
+
 copyLocalBin
 installOhMyZsh
 installAutoSuggestions
 installFzf
 installPhpAndComposer
 installNeovim
-# to install mycli use snap instead
-# installMycli
+installMycli
 installDocker
 installKubectl
+installAlacritty
