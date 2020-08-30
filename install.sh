@@ -197,6 +197,7 @@ installAutoSuggestions
 installFzf
 installPhpAndComposer
 installNeovim
-installMycli
+# to install mycli use snap instead
+# installMycli
 installDocker
 installKubectl
