@@ -80,7 +80,7 @@ function installPhpAndComposer() {
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
         printGreenLine 'Installing php and composer globally...'
-        sudo apt-get install -y php
+        sudo apt-get install -y php php-xml php-curl php-zip php-mbstring
         curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
     else
         printRedLine 'Skip install php and composer globally'
@@ -185,6 +185,7 @@ function installTmux() {
     if [ $PROCEED == 'y' ]; then
         printGreenLine "Installing kubectl..."
         sudo apt install -y tmux
+        cp config/.tmux.conf ~/.tmux.conf
     else
         printRedLine 'Skip install kubectl'
     fi
@@ -202,6 +203,7 @@ function installAlacritty() {
         sudo apt-get install -y fonts-hack-ttf
         sudo add-apt-repository ppa:mmstick76/alacritty
         sudo apt-get install -y alacritty
+        cp ./config/alacritty.yml ./.config/alacritty/alacritty.yml
     else
         printRedLine 'Skip install alacritty'
     fi

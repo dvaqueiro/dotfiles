@@ -1,0 +1,6 @@
+tags*
+*.swp
+*.rest
+/npm-debug.log
+.gutctags
+.session.vim
