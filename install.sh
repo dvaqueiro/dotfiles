@@ -122,7 +122,7 @@ function installMycli() {
     PROCEED="${PROCEED,,}"
     if [ $PROCEED == 'y' ]; then
         printGreenLine "Installing mycli..."
-        sudo apt install -y mycli
+        sudo apt install -y mycli ripgrep
     else
         printRedLine 'Skip install mycli'
     fi
@@ -150,8 +150,7 @@ function installDocker() {
             "deb [arch=amd64] https://download.docker.com/linux/ubuntu disco stable"
             #"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
         sudo apt-get update
-        sudo apt-get install docker-ce docker-ce-cli containerd.io
-        sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose
         sudo groupadd docker
         sudo usermod -aG docker $USER
     else
