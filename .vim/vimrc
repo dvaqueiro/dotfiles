@@ -1,6 +1,6 @@
 set nocompatible              " be iMproved, required
 " filetype off                  " required
-let mapleader = "¡"
+let mapleader = "\<space>"
 
 noremap <Up> <Nop>
 noremap <Down> <Nop>
@@ -9,9 +9,8 @@ noremap <Right> <Nop>
 
 call plug#begin('~/.vim/plugged')
 " Plugins
-" Plug 'vim-airline/vim-airline'
-" Plug 'vim-airline/vim-airline-themes'
 Plug 'itchyny/lightline.vim'
+Plug 'shinchu/lightline-gruvbox.vim'
 Plug 'airblade/vim-gitgutter'
 "Plug 'ctrlpvim/ctrlp.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -23,11 +22,12 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'vim-syntastic/syntastic'
 Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install --no-dev -o'}
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-commentary'
 Plug 'stephpy/vim-php-cs-fixer'
-" Plug 'junegunn/seoul256.vim'
-Plug 'morhetz/gruvbox'
 Plug 'jiangmiao/auto-pairs'
+"Themes
+Plug 'junegunn/seoul256.vim'
+Plug 'morhetz/gruvbox'
+Plug 'sonph/onehalf', {'rtp': 'vim/'}
 " Plug 'AndrewRadev/splitjoin.vim'
 " Javascript world
 Plug 'pangloss/vim-javascript'
@@ -49,16 +49,6 @@ call plug#end()
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <C-cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-let g:lightline = {
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'FugitiveHead'
-      \ },
-      \ }
 
 let g:ale_linter_aliases = {'vue': ['vue', 'javascript']}
 let g:ale_linters = {
@@ -89,7 +79,7 @@ filetype plugin indent on    " required
 " To ignore plugin indent changes, instead use:
 filetype plugin on
 set omnifunc=syntaxcomplete#Complete
-"
+
 set number
 syntax on
 set expandtab
@@ -103,22 +93,51 @@ set ruler
 " set textwidth=80
 set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<,space:·
 set updatetime=300
-" colorscheme desert
-" colorscheme molokai
-" set background=ligh
-" set background=dark
-" let g:solarized_termcolors=256
-"colorscheme solarized
-" colorscheme seoul256-light
-" colorscheme seoul256
+" set background=light
+set background=dark
+let g:gruvbox_contrast_dark='soft'
+let g:gruvbox_contrast_light='medium'
+let g:gruvbox_invert_selection=0
 colorscheme gruvbox
-let g:gruvbox_contrast_dark = 'soft'
 set hlsearch
 " set undodir=~/.vim/undodir
 " set undofile
 let g:loaded_matchparen = 1
 let g:indentLine_setConceal = 1
+let g:indentLine_char = '▏'
+let g:indentLine_enabled = 0
 set ignorecase
+
+function! ToggleBackground()
+  if &background ==? 'dark'
+    set background=light
+    colorscheme onehalflight
+  else
+    set background=dark
+    colorscheme gruvbox
+  endif
+endfunction
+map <S-F3> :call ToggleBackground()<CR>
+
+function! s:set_lightline_colorscheme(name) abort
+    let g:lightline.colorscheme = a:name
+    call lightline#init()
+    call lightline#colorscheme()
+    call lightline#update()
+endfunction
+
+" powerline, solarized, one, onehalflight, gruvbox
+let g:lightline = {
+      \ 'colorscheme' : 'gruvbox',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead'
+      \ },
+      \ }
+set noshowmode
 
 " Show next matched string at the center of the screen
 noremap n nzz
@@ -132,27 +151,11 @@ noremap N Nzz
 " autocmd BufWritePre *.php :%s/\s\+$//e
 autocmd BufWritePre * %s/\s\+$//e
 
-"nnoremap <C-S-j> :m .+1<CR>==
-"nnoremap <C-S-k> :m .-2<CR>==
-"inoremap <C-S-j> :m .+1<CR>==gi
-"inoremap <C-S-k> :m .-2<CR>==gi
-"vnoremap <C-S-j> :m '>+1<CR>gv=gv
-"vnoremap <C-S-k> :m '<-2<CR>gv=gv
 nnoremap <F4> :set number!<CR>
 nnoremap <F3> :set hlsearch!<CR>
 nnoremap <F2> :set list!<CR>
+nnoremap <S-F2> :IndentLinesToggle<CR>
 vnoremap . :normal .<CR>
-
-let g:airline_disable_statusline = 1
-"let g:airline#extensions#branch#enabled = 1
-"let g:airline#extensions#tabline#enabled = 0
-""let g:airline_theme='dark'
-"let g:airline_theme='solarized'
-"let g:airline_powerline_fonts = 1
-
-"if !exists('g:airline_symbols')
-    "let g:airline_symbols = {}
-"endif
 
 let g:vdebug_options= {
 \    "break_on_open" : 0,
@@ -170,8 +173,15 @@ let g:vdebug_options= {
     "\ 'file': '\v\.(exe|so|dll)$',
 "\ }
 
+" Default fzf layout
+" - down / up / left / right
+" let g:fzf_layout = { 'down': '50%' }
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
+let $FZF_DEFAULT_OPTS='--reverse'
+
 nnoremap <C-p> :Files<Cr>
 nnoremap <C-g> :Rg<Cr>
+nnoremap <C-s> :BLines<Cr>
 
 command! JsonFormat :%!python -m json.tool
 
@@ -214,13 +224,13 @@ nmap <silent> gr <Plug>(coc-references)
 autocmd FileType php setlocal omnifunc=phpactor#Complete
 
 " Import missing classes
-nmap <Leader>i :call phpactor#ImportMissingClasses()<CR><CR>
+nmap <Leader>ii :call phpactor#ImportMissingClasses()<CR><CR>
 " Goto definition of class or class member under the cursor
 nmap <Leader>gd :call phpactor#GotoDefinition()<CR>
 " Goto Implementations of interface
 nmap <Leader>cf :call phpactor#CopyFile()<CR>
 " Include use statement
-nmap <Leader>u :call phpactor#UseAdd()<CR>
+nmap <Leader>uu :call phpactor#UseAdd()<CR>
 " Invoke the context menu
 nmap <Leader>mm :call phpactor#ContextMenu()<CR>
 " Invoke the navigation menu
@@ -228,7 +238,9 @@ nmap <Leader>nn :call phpactor#Navigate()<CR>
 " Transform the classes in the current file
 nmap <Leader>tt :call phpactor#Transform()<CR>
 " Generate a new class (replacing the current file)
-nmap <Leader>cn :call phpactor#ClassNew()<CR>
+nmap <Leader>cc :call phpactor#ClassNew()<CR>
+" Generate a new class (replacing the current file)
+nmap <Leader>gg :PhpactorGenerateAccessor<CR>
 " Extract expression (normal mode)
 nmap <silent><Leader>ee :call phpactor#ExtractExpression(v:false)<CR>
 " Extract expression from selection
