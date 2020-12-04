@@ -1,5 +1,4 @@
 # Very Basic Docker intro:
----
 
 ## Check docker
 * `docker version`
@@ -9,7 +8,7 @@
 * `docker run <image_name>` Build and run a container from an image.
     > * Example: docker run hello-world
     > * Concept: Image. Single file with all deps and configs to run a command.
-    > * Concept: Container. Instance of image.
+    > * Concept: Container. Instance of image. Isolate resources.
     > * Concept: Registry. Repository contains images to pull/push. (Private or public).
 
 * `docker run <image_name> command` Build and run a container overwriting image command.
@@ -18,6 +17,7 @@
 
 * `docker ps` List running containers.
 * `docker ps -a` List all containers containers.
+* `docker images` List all images in local cache.
 
 ## Container lifecycle
 * `docker create <image_name>` Create a container from a image.
@@ -47,5 +47,21 @@
 * `docker run --name mysql_57 -p 3307:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:5.7`
 
 ## Build your own custom images
-...
 
+* Dockerfile: Plain text file with instructions to build a image. Declarative.
+
+```dockerfile
+# Specify a base image
+FROM alpine
+
+# Run some command to install additional programs
+RUN apk add --update redis
+
+# Specify a command to run on container startup
+CMD ["redis-server"]
+
+```
+
+* `docker build .` Build image using Dockerfile in current directory.
+* `docker build -t dvaqueiro/redis:latest .` Build a image and tag.
+* `docker commit -c 'CMD["redis-server"]' <container_id>` Generate image from running container with specific command.
