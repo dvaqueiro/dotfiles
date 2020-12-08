@@ -5,23 +5,21 @@
 # This script is licensed under GNU GPL version 2.0 or above
 # -------------------------------------------------------------------------
 ### SETUP MYSQL LOGIN ###
-USER='mysqluser'
-PASS='mysqlpassword'
-HOST="127.0.0.1"
-
-### Set bins path ###
-MYSQL=/usr/bin/mysql
+MCFGFILE='config.cnf'
 
 #####################################
 ### ----[ No Editing below ]------###
 #####################################
+### Set bins path ###
+MYSQL=$(command -v mysql)
+
 die(){
 	echo "$@"
 	exit 9
 }
 
 verify_bins(){
-	[ ! -x $MYSQL ] && die "File $MYSQL does not exists. Make sure correct path is set in $0."
+	[ ! $MYSQL ] && die "Binary for MYSQL does not exists. Make sure correct path is set in $0."
 }
 
 ask_for_data() {
@@ -43,7 +41,7 @@ ask_for_data() {
 }
 
 create_database() {
-    $MYSQL -u $USER -h $HOST -p$PASS -Bse "CREATE DATABASE IF NOT EXISTS $schema;GRANT ALL PRIVILEGES ON $schema.* TO $user@'%' IDENTIFIED BY '$password';FLUSH PRIVILEGES"
+    $MYSQL --defaults-extra-file=$MCFGFILE -Bse "CREATE DATABASE IF NOT EXISTS $schema;GRANT ALL PRIVILEGES ON $schema.* TO $user@'%' IDENTIFIED BY '$password';FLUSH PRIVILEGES"
 }
 
 ### main ###
