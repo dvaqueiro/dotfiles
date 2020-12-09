@@ -32,7 +32,6 @@ GREP=$(command -v grep)
 SSH=$(command -v ssh)
 RSYNC=$(command -v rsync)
 
-
 MYSQLDUMPFLAGS='--max-allowed-packet=128000000'
 RSYNCFLAGS='-avh  --remove-source-files'
 
@@ -97,7 +96,7 @@ usage()
   echo -e " -t <path>\tRemote path to store backup. Default:/tmp/mysql_backups"
   echo -e " -d <host>\tRemote host. Default:user@storage.somedomain.com"
   echo -e " -p <port>\tRemote ssh host port. Default:22"
-  echo -e " -o <format>\tTime format. Default:%H_%M_%S"
+  echo -e " -o <format>\tTime format. Default:%Y_%m_%d-%H_%M_%S"
   echo -e " -f <file>\tMysql connection config file. Default:config.cnf"
   echo -e " -r <number>\tBackup retention. Default:3"
   echo -e " -e <dbs>\tExcluded databases. Default:information_schema performance_schema sys"
@@ -137,5 +136,5 @@ done
 ### main ####
 verify_bins
 verify_mysql_connection
-# show_config
+show_config
 perform_backups
