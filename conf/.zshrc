@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/dvaqueiro/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -64,7 +64,9 @@ ZSH_THEME="robbyrussell"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
     git
+    zsh-syntax-highlighting
     zsh-autosuggestions
+    vi-mode
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -80,7 +82,7 @@ source $ZSH/oh-my-zsh.sh
 if [[ -n $SSH_CONNECTION ]]; then
    export EDITOR='vim'
 else
-   export EDITOR='mvim'
+   export EDITOR='nvim'
 fi
 
 # Compilation flags
@@ -95,7 +97,7 @@ fi
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
-alias zshconfig="mate ~/.zshrc"
+alias zshconfig="nvim ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # alias util='kubectl get nodes --no-headers | awk '\''{print $1}'\'' | xargs -I {} sh -c '\''echo {} ; kubectl describe node {} | grep Allocated -A 5 | grep -ve Event -ve Allocated -ve percent -ve -- ; echo '\'''
@@ -111,6 +113,7 @@ export HISTSIZE=9000
 
 export LESS="-XFR"
 export PATH="$HOME/.symfony/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 export DEVOPS_PATH=/home/dvaqueiro/projects/devops
 
@@ -123,6 +126,35 @@ export FZF_DEFAULT_COMMAND='rg --files --ignore --hidden --follow --glob "!.git/
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-case $- in *i*)
-    [ -z "$TMUX" ] && exec tmux
-esac
+function gitdiff() {
+   git -c color.status=always status --short |
+      fzf --height 100% --ansi \
+      --preview '(git diff HEAD --color=always -- {-1} | sed 1,4d)' \
+      --preview-window right:65% |
+      cut -c4- |
+      sed 's/.* -> //' |
+      tr -d '\n' |
+      pbcopy
+}
+
+# MAX_MEMORY_UNITS=MB
+# TIMEFMT='%J   %U  user %S system %P cpu %*E total'$'\n'\
+# 'avg shared (code):         %X KB'$'\n'\
+# 'avg unshared (data/stack): %D KB'$'\n'\
+# 'total (sum):               %K KB'$'\n'\
+# 'max memory:                %M '$MAX_MEMORY_UNITS''$'\n'\
+# 'page faults from disk:     %F'$'\n'\
+# 'other page faults:         %R'
+
+
+###CPCTELERA_START
+##
+## These lines configure CPCtelera in your system
+##
+export CPCT_PATH=/home/dvaqueiro/Documents/dev/game_dev/agc/cpctelera/cpctelera
+export PATH=${PATH}:/home/dvaqueiro/Documents/dev/game_dev/agc/cpctelera/cpctelera/tools/scripts
+
+###CPCTELERA_END
+
+VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
+VI_MODE_SET_CURSOR=true

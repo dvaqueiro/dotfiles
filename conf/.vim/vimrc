@@ -1,0 +1,278 @@
+set nocompatible              " be iMproved, required
+" filetype off                  " required
+let mapleader = "\<space>"
+
+noremap <Up> <Nop>
+noremap <Down> <Nop>
+noremap <Left> <Nop>
+noremap <Right> <Nop>
+
+call plug#begin('~/.vim/plugged')
+" Plugins
+Plug 'itchyny/lightline.vim'
+Plug 'shinchu/lightline-gruvbox.vim'
+Plug 'airblade/vim-gitgutter'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'vim-vdebug/vdebug'
+Plug 'ludovicchabant/vim-gutentags'
+Plug 'andymass/vim-matchup'
+"Plug 'vim-syntastic/syntastic'
+Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install --no-dev -o'}
+Plug 'tpope/vim-surround'
+"Plug 'stephpy/vim-php-cs-fixer'
+Plug 'jiangmiao/auto-pairs'
+"Themes
+Plug 'junegunn/seoul256.vim'
+Plug 'morhetz/gruvbox'
+Plug 'sonph/onehalf', {'rtp': 'vim/'}
+" Plug 'AndrewRadev/splitjoin.vim'
+" Javascript world
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
+Plug 'posva/vim-vue'
+" Track the engine.
+Plug 'SirVer/ultisnips'
+" Snippets are separated from the engine. Add this if you want them:
+Plug 'honza/vim-snippets'
+Plug 'algotech/ultisnips-php'
+Plug 'nelsyeung/twig.vim'
+" Use release branch
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'chrisbra/csv.vim'
+Plug 'takac/vim-hardtime'
+Plug 'dense-analysis/ale'
+call plug#end()
+
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <C-cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+let g:netrw_banner = 0
+" let g:netrw_browse_split = 4
+let g:netrw_liststyle = 4
+"let g:netrw_winsize = 20
+
+let g:gutentags_ctags_executable="ctags-universal"
+" let g:gutentags_ctags_extra_args=['--languague=php']
+
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsSnippetDirectories = ['~/.vim/plugged/vim-snippets/UltiSnips', 'UltiSnips', 'my-snippets/UltiSnips']
+
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+filetype plugin on
+set omnifunc=syntaxcomplete#Complete
+
+set number
+syntax on
+set expandtab
+set tabstop=3
+set softtabstop=3
+set shiftwidth=3
+set autoindent
+set cursorline
+"set cursorcolumn
+set ruler
+" set textwidth=80
+set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<,space:·
+set updatetime=300
+" set background=light
+set background=dark
+let g:gruvbox_contrast_dark='soft'
+let g:gruvbox_contrast_light='medium'
+let g:gruvbox_invert_selection=0
+colorscheme gruvbox
+set hlsearch
+" set undodir=~/.vim/undodir
+" set undofile
+let loaded_matchparen = 1
+set ignorecase
+
+function! ToggleBackground()
+  if &background ==? 'dark'
+    set background=light
+    colorscheme onehalflight
+  else
+    set background=dark
+    colorscheme gruvbox
+  endif
+endfunction
+map <S-F3> :call ToggleBackground()<CR>
+
+function! s:set_lightline_colorscheme(name) abort
+    let g:lightline.colorscheme = a:name
+    call lightline#init()
+    call lightline#colorscheme()
+    call lightline#update()
+endfunction
+
+" powerline, solarized, one, onehalflight, gruvbox
+let g:lightline = {
+      \ 'colorscheme' : 'gruvbox',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead'
+      \ },
+      \ }
+set noshowmode
+
+" Show next matched string at the center of the screen
+noremap n nzz
+noremap N Nzz
+
+" turn hybrid line numbers on
+"set number relativenumber
+" set nu rnu
+
+" remove trailing whitespace when saving php files
+" autocmd BufWritePre *.php :%s/\s\+$//e
+autocmd BufWritePre * %s/\s\+$//e
+
+nnoremap <F4> :set number!<CR>
+nnoremap <F3> :set hlsearch!<CR>
+nnoremap <F2> :set list!<CR>
+nnoremap <S-F2> :IndentLinesToggle<CR>
+vnoremap . :normal .<CR>
+
+if !exists('g:vdebug_options')
+    let g:vdebug_options = {}
+endif
+let g:vdebug_options= {
+\    "break_on_open" : 0,
+\    "watch_window_style" : 'expanded',
+\    "window_arrangement" : ["DebuggerWatch"]
+\}
+
+"let g:ctrlp_cmd = 'CtrlPMixed'
+"let g:ctrlp_working_path_mode = 'ra'
+"let g:ctrlp_max_files = 0
+"let g:ctrlp_max_depth = 40
+"let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+"let g:ctrlp_custom_ignore = {
+    "\ 'dir':  '\v[\/]\.(git|hg|svn|node_modules|var)|(node_modules|var)$',
+    "\ 'file': '\v\.(exe|so|dll)$',
+"\ }
+
+" Default fzf layout
+" - down / up / left / right
+" let g:fzf_layout = { 'down': '50%' }
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
+let $FZF_DEFAULT_OPTS='--reverse'
+
+nnoremap <C-p> :Files<Cr>
+nnoremap <C-g> :Rg<Cr>
+nnoremap <C-s> :BLines<Cr>
+
+command! JsonFormat :%!python -m json.tool
+
+" Highlight a column in csv text.
+" :Csv 1    " highlight first column
+" :Csv 12   " highlight twelfth column
+" :Csv 0    " switch off highlight
+function! CSVH(colnr)
+  if a:colnr > 1
+    let n = a:colnr - 1
+    execute 'match Keyword /^\([^,]*,\)\{'.n.'}\zs[^,]*/'
+    execute 'normal! 0'.n.'f,'
+  elseif a:colnr == 1
+    match Keyword /^[^,]*/
+    normal! 0
+  else
+    match
+  endif
+endfunction
+command! -nargs=1 Csv :call CSVH(<args>)
+
+" Syntastic
+let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd', 'phpstan']
+let g:syntastic_php_phpcs_args='--standard=PSR2 -n'
+let g:syntastic_php_phpmd_post_args = 'cleancode,codesize,controversial,design,unusedcode'
+let g:syntastic_always_populate_loc_list = 0
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_aggregate_errors = 1
+
+let g:syntastic_error_symbol = "\u2717"
+let g:syntastic_warning_symbol = "\u26A0"
+let g:syntastic_enable_balloons = 1
+
+let g:ale_linters = {
+\ 'php': ['php', 'phpcs', 'phpmd', 'psalm'],
+\}
+let g:ale_lint_on_enter=1
+let g:ale_detail_to_floating_preview=1
+let g:ale_hover_to_floating_preview=1
+let g:ale_sign_error='☠'
+let g:ale_sign_warning='ℹ'
+"let g:ale_lint_on_save=1
+"let g:ale_lint_on_text_changed='normal'
+"let g:ale_cursor_detail=1
+"let g:ale_history_enabled=1
+let g:ale_hover_to_preview=1
+let g:ale_completation_enable=1
+let g:ale_floating_preview=1
+let g:ale_echo_msg_error_str='E'
+let g:ale_echo_msg_warning_str='W'
+let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
+let g:ale_php_phpcs_standard='PSR2'
+let g:ale_php_phpcs_options='--severity=1'
+let g:ale_php_phpmd_ruleset='cleancode,codesize,controversial,design,unusedcode'
+
+
+" Coc mappings
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+autocmd FileType php setlocal omnifunc=phpactor#Complete
+
+" Import missing classes
+nmap <Leader>ii :call phpactor#ImportMissingClasses()<CR><CR>
+" Goto definition of class or class member under the cursor
+nmap <Leader>gd :call phpactor#GotoDefinition()<CR>
+" Goto Implementations of interface
+nmap <Leader>cf :call phpactor#CopyFile()<CR>
+" Include use statement
+nmap <Leader>uu :call phpactor#UseAdd()<CR>
+" Invoke the context menu
+nmap <Leader>mm :call phpactor#ContextMenu()<CR>
+" Invoke the navigation menu
+nmap <Leader>nn :call phpactor#Navigate()<CR>
+" Transform the classes in the current file
+nmap <Leader>tt :call phpactor#Transform()<CR>
+" Generate a new class (replacing the current file)
+nmap <Leader>cc :call phpactor#ClassNew()<CR>
+" Generate a new class (replacing the current file)
+nmap <Leader>gg :PhpactorGenerateAccessor<CR>
+" Extract expression (normal mode)
+nmap <silent><Leader>ee :call phpactor#ExtractExpression(v:false)<CR>
+" Extract expression from selection
+vmap <silent><Leader>ee :<C-U>call phpactor#ExtractExpression(v:true)<CR>
+" Extract method from selection
+vmap <silent><Leader>em :<C-U>call phpactor#ExtractMethod()<CR>
+
+" --column: Show column number
+" --line-number: Show line number
+" --no-heading: Do not show file headings in results
+" --fixed-strings: Search term as a literal string
+" --ignore-case: Case insensitive search
+" --no-ignore: Do not respect .gitignore, etc...
+" --hidden: Search hidden files and folders
+" --follow: Follow symlinks
+" --glob: Additional conditions for search (in this case ignore everything in the .git/ folder)
+" --color: Search color options
+command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
