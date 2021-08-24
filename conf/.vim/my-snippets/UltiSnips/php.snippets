@@ -18,3 +18,13 @@ try {
 }
 $this->connection->commit();
 endsnippet
+
+snippet enlapsed "Microtime snippet" b
+$start = microtime(true);
+$enlapsed = (microtime(true) - $start) * 1000;
+echo "Enlapsed {$enlapsed} microsecs\n";
+endsnippet
+
+snippet stri "strict type declaration" b
+declare(strict_types=1);
+endsnippet

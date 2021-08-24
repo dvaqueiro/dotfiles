@@ -12,17 +12,18 @@ call plug#begin('~/.vim/plugged')
 Plug 'itchyny/lightline.vim'
 Plug 'shinchu/lightline-gruvbox.vim'
 Plug 'airblade/vim-gitgutter'
+"Plug 'ctrlpvim/ctrlp.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-obsession'
 Plug 'Yggdroot/indentLine'
 Plug 'vim-vdebug/vdebug'
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'andymass/vim-matchup'
 "Plug 'vim-syntastic/syntastic'
-Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install --no-dev -o'}
+Plug 'phpactor/phpactor', {'for': 'php','branch': 'develop', 'do': 'composer install --no-dev -o'}
 Plug 'tpope/vim-surround'
-"Plug 'stephpy/vim-php-cs-fixer'
+Plug 'stephpy/vim-php-cs-fixer'
 Plug 'jiangmiao/auto-pairs'
 "Themes
 Plug 'junegunn/seoul256.vim'
@@ -30,7 +31,7 @@ Plug 'morhetz/gruvbox'
 Plug 'sonph/onehalf', {'rtp': 'vim/'}
 " Plug 'AndrewRadev/splitjoin.vim'
 " Javascript world
-Plug 'pangloss/vim-javascript'
+" Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
 Plug 'posva/vim-vue'
 " Track the engine.
@@ -55,7 +56,7 @@ let g:netrw_banner = 0
 let g:netrw_liststyle = 4
 "let g:netrw_winsize = 20
 
-let g:gutentags_ctags_executable="ctags-universal"
+let g:gutentags_ctags_executable="ctags"
 " let g:gutentags_ctags_extra_args=['--languague=php']
 
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
@@ -75,9 +76,9 @@ set omnifunc=syntaxcomplete#Complete
 set number
 syntax on
 set expandtab
-set tabstop=3
-set softtabstop=3
-set shiftwidth=3
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
 set autoindent
 set cursorline
 "set cursorcolumn
@@ -87,6 +88,9 @@ set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<,space:·
 set updatetime=300
 " set background=light
 set background=dark
+set scrolloff=10
+set breakindent
+set showbreak=>>
 let g:gruvbox_contrast_dark='soft'
 let g:gruvbox_contrast_light='medium'
 let g:gruvbox_invert_selection=0
@@ -95,6 +99,9 @@ set hlsearch
 " set undodir=~/.vim/undodir
 " set undofile
 let loaded_matchparen = 1
+let g:indentLine_setConceal = 1
+let g:indentLine_char = '▏'
+let g:indentLine_enabled = 0
 set ignorecase
 
 function! ToggleBackground()
@@ -120,13 +127,22 @@ let g:lightline = {
       \ 'colorscheme' : 'gruvbox',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \             [ 'filename', 'readonly', 'modified' ] ]
       \ },
       \ 'component_function': {
-      \   'gitbranch': 'FugitiveHead'
+      \   'filename': 'LightlineFilename'
       \ },
       \ }
 set noshowmode
+
+function! LightlineFilename()
+  let root = fnamemodify(get(b:, 'git_dir'), ':h')
+  let path = expand('%:p')
+  if path[:len(root)-1] ==# root
+    return path[len(root)+1:]
+  endif
+  return expand('%')
+endfunction
 
 " Show next matched string at the center of the screen
 noremap n nzz
@@ -146,12 +162,9 @@ nnoremap <F2> :set list!<CR>
 nnoremap <S-F2> :IndentLinesToggle<CR>
 vnoremap . :normal .<CR>
 
-if !exists('g:vdebug_options')
-    let g:vdebug_options = {}
-endif
 let g:vdebug_options= {
 \    "break_on_open" : 0,
-\    "watch_window_style" : 'expanded',
+\    "watch_window_style" : 'compact',
 \    "window_arrangement" : ["DebuggerWatch"]
 \}
 
@@ -169,7 +182,8 @@ let g:vdebug_options= {
 " - down / up / left / right
 " let g:fzf_layout = { 'down': '50%' }
 let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
-let $FZF_DEFAULT_OPTS='--reverse'
+let g:fzf_preview_window = 'down:60%'
+let $FZF_DEFAULT_OPTS='--ansi --reverse --bind up:preview-up,down:preview-down'
 
 nnoremap <C-p> :Files<Cr>
 nnoremap <C-g> :Rg<Cr>
@@ -196,41 +210,45 @@ endfunction
 command! -nargs=1 Csv :call CSVH(<args>)
 
 " Syntastic
-let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd', 'phpstan']
-let g:syntastic_php_phpcs_args='--standard=PSR2 -n'
-let g:syntastic_php_phpmd_post_args = 'cleancode,codesize,controversial,design,unusedcode'
-let g:syntastic_always_populate_loc_list = 0
-let g:syntastic_auto_loc_list = 0
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_aggregate_errors = 1
+"let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd']
+"let g:syntastic_php_phpcs_args='--standard=PSR2 -n'
+"let g:syntastic_php_phpmd_post_args = 'cleancode,codesize,controversial,design,unusedcode'
+"let g:syntastic_always_populate_loc_list = 0
+"let g:syntastic_auto_loc_list = 0
+"let g:syntastic_check_on_open = 1
+"let g:syntastic_check_on_wq = 0
+"let g:syntastic_aggregate_errors = 1
+"let g:syntastic_enable_highlighting = 1
+"let g:syntastic_enable_signs=1
+"highlight SyntasticErrorLine guibg=#550000
+"highlight SyntasticWarningLine guibg=#331d1e
+"highlight link SyntasticWarningLine SpellBad
+"highlight link SyntasticErrorLine SpellBad
 
-let g:syntastic_error_symbol = "\u2717"
-let g:syntastic_warning_symbol = "\u26A0"
-let g:syntastic_enable_balloons = 1
-
+" Ale
+let g:ale_linter_aliases = {'vue': ['vue', 'javascript']}
 let g:ale_linters = {
-\ 'php': ['php', 'phpcs', 'phpmd', 'psalm'],
+\ 'javascript': ['eslint'],
+\ 'vue': ['eslint', 'vls'],
+\ 'typescript': ['tsserver', 'tslint'],
+\ 'php': ['phpmd', 'phpcs'],
 \}
-let g:ale_lint_on_enter=1
-let g:ale_detail_to_floating_preview=1
-let g:ale_hover_to_floating_preview=1
 let g:ale_sign_error='☠'
 let g:ale_sign_warning='ℹ'
-"let g:ale_lint_on_save=1
-"let g:ale_lint_on_text_changed='normal'
-"let g:ale_cursor_detail=1
-"let g:ale_history_enabled=1
-let g:ale_hover_to_preview=1
-let g:ale_completation_enable=1
-let g:ale_floating_preview=1
+let g:ale_lint_on_save=1
+let g:ale_lint_on_text_changed='normal'
+let g:ale_cursor_detail=0
+let g:ale_history_enabled=1
+let g:ale_detail_to_floating_preview=1
 let g:ale_echo_msg_error_str='E'
 let g:ale_echo_msg_warning_str='W'
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
+let g:ale_php_phpcs__use_global = 1
 let g:ale_php_phpcs_standard='PSR2'
-let g:ale_php_phpcs_options='--severity=1'
+let g:ale_php_phpcs_options='--severity=3'
 let g:ale_php_phpmd_ruleset='cleancode,codesize,controversial,design,unusedcode'
 
+let g:coc_node_path = trim(system('which node'))
 
 " Coc mappings
 " GoTo code navigation.
