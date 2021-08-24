@@ -437,10 +437,10 @@ background_opacity: 1.0
 #    - --login
 shell:
   program: /bin/zsh
-    # args:
-    # - -l
-    # - -c
-    # - "tmux attach || tmux"
+  args:
+    - -l
+    - -c
+    - "tmux attach || tmux"
 
 # Startup directory
 #
