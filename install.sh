@@ -121,7 +121,7 @@ installKubectl() {
    }
 
 installAwsCli() {
-   sudo apt-fet install -y aws-cli
+   sudo apt-get install -y aws-cli
    printGreenLine "Update .aws/config and .aws/credentials files..."
 }
 
@@ -143,5 +143,5 @@ installAwsCli
 installDocker
 installKubectl
 installHelm
-stowDirs
+# stowDirs
 exit 0

@@ -64,9 +64,8 @@ ZSH_THEME="robbyrussell"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
     git
-    zsh-syntax-highlighting
     zsh-autosuggestions
-    vi-mode
+    zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -113,9 +112,9 @@ export HISTSIZE=9000
 
 export LESS="-XFR"
 export PATH="$HOME/.symfony/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.dotfiles/bin:$PATH"
 
-export DEVOPS_PATH=/home/dvaqueiro/projects/devops
+#export DEVOPS_PATH=/home/dvaqueiro/projects/devops
 
 # --files: List files that would be searched but do not search
 # --no-ignore: Do not respect .gitignore, etc...
@@ -136,25 +135,3 @@ function gitdiff() {
       tr -d '\n' |
       pbcopy
 }
-
-# MAX_MEMORY_UNITS=MB
-# TIMEFMT='%J   %U  user %S system %P cpu %*E total'$'\n'\
-# 'avg shared (code):         %X KB'$'\n'\
-# 'avg unshared (data/stack): %D KB'$'\n'\
-# 'total (sum):               %K KB'$'\n'\
-# 'max memory:                %M '$MAX_MEMORY_UNITS''$'\n'\
-# 'page faults from disk:     %F'$'\n'\
-# 'other page faults:         %R'
-
-
-###CPCTELERA_START
-##
-## These lines configure CPCtelera in your system
-##
-export CPCT_PATH=/home/dvaqueiro/Documents/dev/game_dev/agc/cpctelera/cpctelera
-export PATH=${PATH}:/home/dvaqueiro/Documents/dev/game_dev/agc/cpctelera/cpctelera/tools/scripts
-
-###CPCTELERA_END
-
-VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
-VI_MODE_SET_CURSOR=true
