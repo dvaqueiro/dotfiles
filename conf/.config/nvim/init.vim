@@ -10,12 +10,11 @@ let mapleader = "\<space>"
 set encoding=UTF-8
 set nocompatible
 
-set number
+"set number
 set cursorline
 set scrolloff=8
 set wrap
-set showbreak=↳
-set colorcolumn=80
+"set colorcolumn=80
 
 " default tab conf
 set expandtab
@@ -34,8 +33,11 @@ set nobackup
 set undodir=~/.vim/undodir
 set undofile
 
-set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<,space:·
+" set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<,space:·
+set showbreak=↪\
+set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 set updatetime=50
+set fillchars+=vert:\ "White space at the end
 
 syntax enable
 filetype plugin indent on
@@ -50,3 +52,7 @@ autocmd BufWritePre * %s/\s\+$//e
 
 runtime ./keymaps.vim
 runtime ./plug.vim
+
+lua << EOF
+require("dvaqueiro")
+EOF

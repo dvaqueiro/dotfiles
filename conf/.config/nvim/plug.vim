@@ -27,9 +27,8 @@ if has("nvim")
    Plug 'ray-x/lsp_signature.nvim'
    Plug 'onsails/lspkind.nvim'
    Plug 'lewis6991/gitsigns.nvim'
-   Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
-   "Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-   "Plug 'nvim-lua/popup.nvim'
+   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+   "Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
 endif
 
 call plug#end()
