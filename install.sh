@@ -130,6 +130,11 @@ installAwsCli() {
     printGreenLine "Update .aws/config and .aws/credentials files..."
 }
 
+installVarious() {
+    sudo apt-get install -y tldr
+    printGreenLine "Installl various terminal apps"
+}
+
 stowDirs() {
     sudo apt-get install -y stow &&
     cd "$SCRIPTPATH" &&
@@ -149,5 +154,6 @@ installAwsCli
 installDocker
 installKubectl
 installHelm
+installVarious
 stowDirs
 exit 0
