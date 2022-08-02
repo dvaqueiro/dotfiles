@@ -6,7 +6,8 @@ set nocompatible
 set number
 set cursorline
 set scrolloff=8
-set nowrap
+set wrap
+set showbreak=↳
 set colorcolumn=80
 
 " default tab conf
@@ -48,7 +49,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
-Plug 'vim-vdebug/vdebug'
+" Plug 'vim-vdebug/vdebug'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'andymass/vim-matchup'
 "Plug 'vim-syntastic/syntastic'
@@ -71,11 +72,12 @@ Plug 'honza/vim-snippets'
 Plug 'algotech/ultisnips-php'
 Plug 'nelsyeung/twig.vim'
 " Use release branch
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
 Plug 'chrisbra/csv.vim'
 Plug 'takac/vim-hardtime'
 Plug 'dense-analysis/ale'
 Plug 'ryanoasis/vim-devicons'
+Plug 'puremourning/vimspector'
 call plug#end()
 
 " Mappings
@@ -91,6 +93,8 @@ nnoremap <F2> :set list!<CR>
 nnoremap <S-F2> :IndentLinesToggle<CR>
 vnoremap . :normal .<CR>
 
+let g:vimspector_enable_mappings = 'HUMAN'
+
 " Show next matched string at the center of the screen
 noremap n nzz
 noremap N Nzz
@@ -101,7 +105,7 @@ inoremap <expr> <C-cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " color schema. Grovbox
 set background=dark
-" set background=light
+"set background=light
 let g:gruvbox_contrast_dark='soft'
 let g:gruvbox_contrast_light='medium'
 let g:gruvbox_invert_selection=0
@@ -124,7 +128,7 @@ let g:UltiSnipsSnippetDirectories = ['~/.vim/plugged/vim-snippets/UltiSnips', 'U
 function! ToggleBackground()
   if &background ==? 'dark'
     set background=light
-    colorscheme onehalflight
+    colorscheme gruvbox
   else
     set background=dark
     colorscheme gruvbox
@@ -132,7 +136,7 @@ function! ToggleBackground()
 endfunction
 map <S-F3> :call ToggleBackground()<CR>
 
-function! s:set_lightline_colorscheme(name) abort
+function! Set_lightline_colorscheme(name) abort
     let g:lightline.colorscheme = a:name
     call lightline#init()
     call lightline#colorscheme()

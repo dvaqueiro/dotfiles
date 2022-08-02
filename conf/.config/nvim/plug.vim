@@ -5,8 +5,10 @@ endif
 call plug#begin()
 
 Plug 'morhetz/gruvbox'
-Plug 'itchyny/lightline.vim'
-Plug 'shinchu/lightline-gruvbox.vim'
+Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+"Plug 'itchyny/lightline.vim'
+"Plug 'shinchu/lightline-gruvbox.vim'
+Plug 'nvim-lualine/lualine.nvim'
 Plug 'cohama/lexima.vim'
 Plug 'tpope/vim-fugitive'
 "Plug 'dense-analysis/ale'
