@@ -37,7 +37,7 @@ local on_attach = function(client, bufnr)
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     vim.cmd [[augroup Format]]
     vim.cmd [[autocmd! * <buffer>]]
-    vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.format()]]
+    vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
     vim.cmd [[augroup END]]
 end
 
