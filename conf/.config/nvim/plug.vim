@@ -28,6 +28,8 @@ if has("nvim")
    Plug 'onsails/lspkind.nvim'
    Plug 'lewis6991/gitsigns.nvim'
    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+   Plug 'saadparwaiz1/cmp_luasnip'  " Snippets source
+   Plug 'L3MON4D3/LuaSnip'          " Snippet engine
    "Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
 endif
 

@@ -79,10 +79,7 @@ local lspkind = require('lspkind')
 cmp.setup({
     snippet = {
         expand = function(args)
-            -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-            -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-            -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-            -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+            require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
         end,
     },
     window = {
@@ -115,14 +112,21 @@ cmp.setup({
                 -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
                 fallback()
             end
-        end, { "i", "s" }),
+        end,
+        { "i", "s" }),
+        ["<S-Tab>"] = function(fallback)
+            if cmp.visible() then
+                cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+                luasnip.jump(-1)
+            else
+                fallback()
+            end
+        end,
     },
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
-        -- { name = 'vsnip' }, -- For vsnip users.
-        -- { name = 'luasnip' }, -- For luasnip users.
-        -- { name = 'ultisnips' }, -- For ultisnips users.
-        -- { name = 'snippy' }, -- For snippy users.
+        { name = 'luasnip' }, -- For luasnip users.
     }, {
         { name = 'buffer' },
     })
@@ -146,6 +150,11 @@ nvim_lsp.intelephense.setup {
 }
 
 nvim_lsp.phpactor.setup {
+    on_attach = on_attach,
+    capabilities = capabilities
+}
+
+require'lspconfig'.tsserver.setup{
     on_attach = on_attach,
     capabilities = capabilities
 }
