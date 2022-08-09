@@ -154,10 +154,17 @@ nvim_lsp.phpactor.setup {
     capabilities = capabilities
 }
 
+-- Javascript/Typescript
 require'lspconfig'.tsserver.setup{
     on_attach = on_attach,
     capabilities = capabilities
 }
+
+-- Bash
+require'lspconfig'.bashls.setup{}
+
+-- docker
+require'lspconfig'.dockerls.setup{}
 
 -- Lua
 require 'lspconfig'.sumneko_lua.setup {
