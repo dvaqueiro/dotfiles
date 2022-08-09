@@ -30,6 +30,9 @@ if has("nvim")
    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
    Plug 'saadparwaiz1/cmp_luasnip'  " Snippets source
    Plug 'L3MON4D3/LuaSnip'          " Snippet engine
+   Plug 'mfussenegger/nvim-dap'
+   Plug 'rcarriga/nvim-dap-ui'
+   Plug 'theHamsta/nvim-dap-virtual-text'
    "Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
 endif
 

@@ -12,6 +12,7 @@ nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
 
 lua << EOF
 vim.keymap.set('n', '<Leader>ff', "<cmd>lua require('telescope.builtin').find_files()<cr>")
+vim.keymap.set('v', '<C-f>', 'y<ESC>:Telescope live_grep default_text=<c-r>0<CR>')
 
 require('telescope').setup{
 defaults = {
