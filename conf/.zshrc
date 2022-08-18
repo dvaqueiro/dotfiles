@@ -114,6 +114,7 @@ export LESS="-XFR"
 export PATH="$HOME/.symfony/bin:$PATH"
 export PATH="$HOME/.dotfiles/bin:$PATH"
 export PATH="$HOME/.config/composer/vendor/bin:$PATH"
+export PATH="$HOME/Documents/dev/phpactor/bin:$PATH"
 
 #export DEVOPS_PATH=/home/dvaqueiro/projects/devops
 

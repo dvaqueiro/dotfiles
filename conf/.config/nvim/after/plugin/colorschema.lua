@@ -6,4 +6,5 @@ vim.opt.background = 'dark'
 -- vim.cmd("colorscheme gruvbox")
 
 vim.g.tokyonight_style = "night"
+vim.g.tokyonight_hide_inactive_statusline = true
 vim.cmd [[colorscheme tokyonight]]

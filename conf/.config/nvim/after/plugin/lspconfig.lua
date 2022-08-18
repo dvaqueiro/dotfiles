@@ -48,11 +48,11 @@ for type, icon in pairs(signs) do
 end
 
 vim.diagnostic.config({
-    virtual_text = true,
+    virtual_text = false,
     signs = true,
     underline = true,
     update_in_insert = true,
-    severity_sort = false,
+    severity_sort = true
 })
 
 -- vim.o.updatetime = 250
@@ -143,6 +143,8 @@ cmp.setup.filetype('gitcommit', {
 
 require "lsp_signature".setup({})
 
+require("lsp_lines").setup()
+
 -- Php
 nvim_lsp.intelephense.setup {
     on_attach = on_attach,
@@ -151,7 +153,12 @@ nvim_lsp.intelephense.setup {
 
 nvim_lsp.phpactor.setup {
     on_attach = on_attach,
-    capabilities = capabilities
+    capabilities = capabilities,
+    init_options = {
+        ["language_server_phpstan.enabled"] = false,
+        ["language_server_psalm.enabled"] = false,
+        ["php.version"] = 8.1,
+    }
 }
 
 require'lspconfig'.psalm.setup{}
