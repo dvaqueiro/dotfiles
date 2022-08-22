@@ -34,8 +34,7 @@ if has("nvim")
    Plug 'rcarriga/nvim-dap-ui'
    Plug 'theHamsta/nvim-dap-virtual-text'
    Plug 'ThePrimeagen/refactoring.nvim'
-   Plug 'https://git.sr.ht/~whynothugo/lsp_lines.nvim'
-   "Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
+   Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
 endif
 
 call plug#end()
