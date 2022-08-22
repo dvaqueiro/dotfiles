@@ -1,7 +1,7 @@
 #!/bin/bash
 
 executeQuery(){
-    mysql --login-path=app -Ddb01bfy_app -BNe"$1"
+    mysql --login-path=app -Dapp -BNe"$1"
     exit 0
     if [ -n "$?" ] && [ "$?" -ne "0" ]; then
         exit 1
@@ -21,7 +21,7 @@ do
     IFS='@'
     read -a module_arr <<< "$module"
     echo "Updating into database for ${module_arr[0]} and ${module_arr[1]}...👌"
-    mysql --login-path=app -Ddb01bfy_app -e "update bf_catalogue_steps_status set step = 'CHUNK_PROCESS', step_status = 'DONE' where module_id = '${module_arr[0]}' and catalogue_type = '${module_arr[1]}';"
+    mysql --login-path=app -Dapp -e "update bf_catalogue_steps_status set step = 'CHUNK_PROCESS', step_status = 'DONE' where module_id = '${module_arr[0]}' and catalogue_type = '${module_arr[1]}';"
     echo "Launch post-process commnad for ${module_arr[0]} and ${module_arr[1]}...👌"
     kubectl exec -ti `kubectl get po | awk '{print $1}' | grep admin -m1` -- php bin/console bf:catalogue:post-process "${module_arr[0]}" "${module_arr[1]}"
     sleep 1
