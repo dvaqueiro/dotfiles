@@ -24,6 +24,6 @@ do
 done
 echo "Perfom to $moduleId and $catalogueType ...";
 echo "Updating into database..."
-mysql --login-path=app -e "use db01bfy_app; update bf_catalogue_steps_status set step = 'CHUNK_PROCESS', step_status = 'DONE'  where module_id = '$moduleId' and catalogue_type = '$catalogueType';"
+mysql --login-path=app -e "use app; update bf_catalogue_steps_status set step = 'CHUNK_PROCESS', step_status = 'DONE'  where module_id = '$moduleId' and catalogue_type = '$catalogueType';"
 echo "Launch post-process commnad..."
 kubectl exec -ti `kubectl get po | awk '{print $1}' | grep admin -m1` -- php bin/console bf:catalogue:post-process "$moduleId" "$catalogueType"
