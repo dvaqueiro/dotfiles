@@ -35,6 +35,7 @@ if has("nvim")
    Plug 'theHamsta/nvim-dap-virtual-text'
    Plug 'ThePrimeagen/refactoring.nvim'
    Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
+   Plug 'rafamadriz/friendly-snippets'
 endif
 
 call plug#end()

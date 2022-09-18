@@ -76,6 +76,7 @@ end
 -- Setup nvim-cmp.
 local cmp = require 'cmp'
 local lspkind = require('lspkind')
+local luasnip = require('luasnip')
 
 cmp.setup({
     snippet = {
@@ -89,7 +90,14 @@ cmp.setup({
     },
     formatting = {
         format = lspkind.cmp_format({
-            mode = 'symbol', -- show only symbol annotations
+            mode = 'symbol_text', -- show only symbol annotations
+            menu = {
+                buffer = "[Buf]",
+                nvim_lsp = "[Lsp]",
+                luasnip = "[Snip]",
+                nvim_lua = "[Lua]",
+                latex_symbols = "[Lat]",
+            },
             maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
 
             -- The function below will be called before any actual modifications from lspkind
@@ -105,17 +113,16 @@ cmp.setup({
         ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_next_item()
-                -- elseif vim.fn["vsnip#available"](1) == 1 then
-                --   feedkey("<Plug>(vsnip-expand-or-jump)", "")
+            elseif luasnip.expand_or_jumpable() then
+                luasnip.expand_or_jump()
             elseif has_words_before() then
                 cmp.complete()
             else
-                -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
                 fallback()
             end
         end,
         { "i", "s" }),
-        ["<S-Tab>"] = function(fallback)
+        ["<S-Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
             elseif luasnip.jumpable(-1) then
@@ -124,6 +131,7 @@ cmp.setup({
                 fallback()
             end
         end,
+        { "i", "s" }),
     },
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
@@ -141,6 +149,9 @@ cmp.setup.filetype('gitcommit', {
         { name = 'buffer' },
     })
 })
+
+require("luasnip.loaders.from_vscode").lazy_load()
+require("luasnip.loaders.from_snipmate").lazy_load({paths = "~/.config/nvim/snippets"})
 
 -- Php
 nvim_lsp.intelephense.setup {
