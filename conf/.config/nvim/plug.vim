@@ -36,6 +36,7 @@ if has("nvim")
    Plug 'ThePrimeagen/refactoring.nvim'
    Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
    Plug 'rafamadriz/friendly-snippets'
+   Plug 'NTBBloodbath/rest.nvim'
 endif
 
 call plug#end()

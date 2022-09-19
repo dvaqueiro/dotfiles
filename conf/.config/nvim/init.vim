@@ -46,6 +46,10 @@ filetype plugin indent on
 let g:netrw_banner=0
 let g:netrw_liststyle=4
 
+set foldlevel=20
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
+
 " remove trailing whitespace when saving php files
 " autocmd BufWritePre *.php :%s/\s\+$//e
 autocmd BufWritePre * %s/\s\+$//e
