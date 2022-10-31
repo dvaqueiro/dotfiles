@@ -14,6 +14,7 @@ set nocompatible
 set cursorline
 set scrolloff=8
 set wrap
+set mouse=
 "set colorcolumn=80
 
 " default tab conf

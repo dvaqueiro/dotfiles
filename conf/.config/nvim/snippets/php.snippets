@@ -641,24 +641,25 @@ snippet test "public function testXYZ() { ... }"
 		${0:${VISUAL}}
 	}
 snippet setup "protected function setUp() { ... }"
-	protected function setUp()
+	protected function setUp(): void
 	{
 		${0:${VISUAL}}
 	}
 snippet teardown "protected function tearDown() { ... }"
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		${0:${VISUAL}}
 	}
 snippet proph "$observer = $this->prophesize(SomeClass::class);"
 	$${1:observer} = $this->prophesize(${2:SomeClass}::class);
 snippet mock "$mock = $this->createMock(SomeClass::class);"
-	$${1:mock} = $this->createMock(${2:SomeClass}::class);
-snippet exp "phpunit expects"
-	expects($this->${1:once}())
-		->method('${2}')
-		->with(${3})
-		->willReturn(${4});
+	\$${1:mock} = \$this->createMock(${2:SomeClass}::class);
+snippet expe "phpunit expects"
+	\$${1:mock}
+		->expects(self::${2:once}())
+		->method('${3}')
+		->with(${4})
+		->willReturn(${5});
 snippet testcmt "phpunit comment with group"
 	/**
 	* @group ${1}
@@ -688,3 +689,13 @@ snippet fe "file_exists"
 	file_exists(${1:file})$0
 snippet id "is_dir"
 	is_dir(${1:path})$0
+# Custom
+snippet tue "throw unimplemented exception"
+	throw new \RuntimeException("Unimplemented " . __METHOD__);
+snippet vdump "Symfony Vardumper"
+	\Symfony\Component\VarDumper\VarDumper::dump(${1:var});
+snippet pfc "public constructor funciton"
+	${1:public} function ${2:__construct}(${3:argument})
+	{
+		${0}
+	}
