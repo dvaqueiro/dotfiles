@@ -14,4 +14,4 @@ vnoremap . :normal .<CR>
 noremap n nzz
 noremap N Nzz
 
-nnoremap <leader>ex :NvimTreeToggle<CR>
+nnoremap <leader>ex :NvimTreeFindFileToggle<CR>

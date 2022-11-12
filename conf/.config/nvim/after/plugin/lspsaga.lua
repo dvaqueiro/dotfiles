@@ -4,7 +4,31 @@ local action = require("lspsaga.codeaction")
 
 -- use default config
 saga.init_lsp_saga({
+    -- Options with default value
+    -- "single" | "double" | "rounded" | "bold" | "plus"
+    border_style = "rounded",
+    --the range of 0 for fully opaque window (disabled) to 100 for fully
+    --transparent background. Values between 0-30 are typically most useful.
+    saga_winblend = 0,
     finder_request_timeout = 5000,
+    code_action_icon = "",
+    -- if true can press number to execute the codeaction in codeaction window
+    code_action_num_shortcut = true,
+    -- same as nvim-lightbulb but async
+    code_action_lightbulb = {
+        enable = true,
+        enable_in_insert = true,
+        cache_code_action = true,
+        sign = true,
+        update_time = 150,
+        sign_priority = 20,
+        virtual_text = false,
+    },
+    rename_action_quit = '<ESC>',
+    code_action_keys = {
+        quit = '<ESC>',
+        exec = '<CR>',
+    }
 })
 
 -- Lsp finder find the symbol definition implmement reference
@@ -35,15 +59,8 @@ keymap("n","<leader>o", "<cmd>LSoutlineToggle<CR>",{ silent = true })
 -- Hover Doc
 keymap("n", "K", "<cmd>Lspsaga hover_doc<CR>", { silent = true })
 
--- Signature help
-keymap("n", "<C-k>", "<Cmd>Lspsaga signature_help<CR>", { silent = true })
 
-local action = require("lspsaga.action")
--- scroll in hover doc or  definition preview window
-vim.keymap.set("n", "<C-f>", function()
-    action.smart_scroll_with_saga(1)
-end, { silent = true })
--- scroll in hover doc or  definition preview window
-vim.keymap.set("n", "<C-b>", function()
-    action.smart_scroll_with_saga(-1)
-end, { silent = true })
+-- show symbols in winbar must nightly
+-- in_custom mean use lspsaga api to get symbols
+-- and set it to your custom winbar or some winbar plugins.
+-- if in_cusomt = true you must set in_enable to false

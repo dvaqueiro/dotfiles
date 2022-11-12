@@ -31,11 +31,12 @@ local on_attach = function(client, bufnr)
     --buf_set_keymap('n', '<leader>ds', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
     --buf_set_keymap('n', '<leader>dp', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
     --buf_set_keymap('n', '<leader>dn', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
-    -- buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+    --buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
     buf_set_keymap('n', '<leader>fo', '<cmd>lua vim.lsp.buf.format()<CR>', opts)
 
     -- formatting
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    local capabilities = require("cmp_nvim_lsp").default_capabilities()
+    -- local capabilities = vim.lsp.protocol.make_client_capabilities()
     vim.cmd [[augroup Format]]
     vim.cmd [[autocmd! * <buffer>]]
     vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
@@ -59,7 +60,8 @@ vim.diagnostic.config({
 -- vim.o.updatetime = 120
 -- vim.cmd [[autocmd! CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+-- local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 -- set completeopt=menu,menuone,noselect
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
@@ -136,8 +138,9 @@ cmp.setup({
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
         { name = 'luasnip' }, -- For luasnip users.
-    }, {
         { name = 'buffer' },
+        { name = 'path' },
+        { name = "nvim_lsp_signature_help" }
     })
 })
 
@@ -164,7 +167,7 @@ nvim_lsp.phpactor.setup {
     capabilities = capabilities,
     init_options = {
         ["language_server_phpstan.enabled"] = false,
-        ["language_server_psalm.enabled"] = false,
+        ["language_server_psalm.enabled"] = true,
         ["php.version"] = 8.1,
     }
 }
@@ -184,14 +187,14 @@ require'lspconfig'.bashls.setup{}
 require'lspconfig'.dockerls.setup{}
 
 -- Lua
-require 'lspconfig'.sumneko_lua.setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-    settings = {
-        Lua = {
-            diagnostics = {
-                globals = { 'vim' }
-            }
-        }
-    }
-}
+-- require 'lspconfig'.sumneko_lua.setup {
+    -- on_attach = on_attach,
+    -- capabilities = capabilities,
+    -- settings = {
+        -- Lua = {
+            -- diagnostics = {
+                -- globals = { 'vim' }
+            -- }
+        -- }
+    -- }
+-- }

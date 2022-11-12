@@ -24,10 +24,11 @@ if has("nvim")
    Plug 'hrsh7th/cmp-buffer'
    Plug 'hrsh7th/cmp-path'
    Plug 'hrsh7th/nvim-cmp'
-   Plug 'ray-x/lsp_signature.nvim'
+   Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
    Plug 'onsails/lspkind.nvim'
    Plug 'lewis6991/gitsigns.nvim'
    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+   Plug 'nvim-treesitter/nvim-treesitter-textobjects'
    Plug 'saadparwaiz1/cmp_luasnip'  " Snippets source
    Plug 'L3MON4D3/LuaSnip'          " Snippet engine
    Plug 'mfussenegger/nvim-dap'
