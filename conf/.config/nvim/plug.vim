@@ -38,6 +38,7 @@ if has("nvim")
    Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
    Plug 'rafamadriz/friendly-snippets'
    Plug 'NTBBloodbath/rest.nvim'
+   Plug 'sunjon/shade.nvim'
 endif
 
 call plug#end()
