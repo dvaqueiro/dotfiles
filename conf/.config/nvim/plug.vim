@@ -9,7 +9,6 @@ Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'cohama/lexima.vim'
 Plug 'tpope/vim-fugitive'
-"Plug 'dense-analysis/ale'
 
 if has("nvim")
    Plug 'nvim-lua/plenary.nvim'
