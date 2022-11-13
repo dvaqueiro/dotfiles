@@ -20,9 +20,7 @@ local options = {
     guifont = 'Hack 14',
     listchars = 'tab:→ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨',
     showbreak = '↪',
-    foldlevel = 20,
-    foldmethod = 'expr',
-    foldexpr = 'nvim_treesitter#foldexpr()'
+    foldlevel = 20
 }
 
 for k, v in pairs(options) do
@@ -40,7 +38,3 @@ vim.opt.fillchars = {
   foldsep = "│",
   foldclose = "▸",
 }
-
--- remove trailing whitespace when saving files
--- autocmd BufWritePre *.php :%s/\s\+$//e For php files only
-vim.cmd("autocmd BufWritePre * %s/\\s\\+$//e")

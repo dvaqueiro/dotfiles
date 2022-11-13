@@ -27,10 +27,10 @@ keymap("n", "n", "nzz", opts)
 keymap("n", "N", "Nzz", opts)
 
 -- Special functions
-keymap("n", "<F2>", ":set list!", opts)
+keymap("n", "<F2>", ":set list!<CR>", opts)
 keymap("n", "<S-F2>", ":IndentLinesToggle<CR>", opts)
-keymap("n", "<F3>", ":set hlsearch!", opts)
-keymap("n", "<F4>", ":set number!", opts)
+keymap("n", "<F3>", ":set hlsearch!<CR>", opts)
+keymap("n", "<F4>", ":set number!<CR>", opts)
 keymap("v", ".", ":normal .<CR>", opts)
 
 -- Toggle Nvin Tree
