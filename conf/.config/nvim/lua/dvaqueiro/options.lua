@@ -1,7 +1,3 @@
-vim.api.nvim_set_keymap("", "<Space>", "<Nop>", { noremap = true, silent = true })
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
 local options = {
     number = true,              -- set line numbers
     relativenumber = true,      -- set relative line numbers
