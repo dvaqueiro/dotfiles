@@ -42,3 +42,12 @@ keymap('n', '<Leader>fg', "<cmd>lua require('telescope.builtin').live_grep()<CR>
 keymap('n', '<Leader>fb', "<cmd>lua require('telescope.builtin').buffers()<CR>", opts)
 keymap('n', '<Leader>fh', "<cmd>lua require('telescope.builtin').help_tags()<CR>", opts)
 keymap('v', '<C-f>', 'y<ESC>:Telescope live_grep default_text=<c-r>0<CR>', opts)
+
+-- Ldap (Debugg)
+vim.keymap.set('n', '<F5>', "<cmd>lua require'dap'.continue()<CR>", opts)
+vim.keymap.set('n', '<S-F5>', "<cmd>lua require'dap'.disconnect()<CR><cmd>lua require'dapui'.close()<CR>", opts)
+vim.keymap.set('n', '<F10>', "<cmd>lua require'dap'.step_over()<CR>", opts)
+vim.keymap.set('n', '<F11>', "<cmd>lua require'dap'.step_into()<CR>", opts)
+vim.keymap.set('n', '<S-F11>', "<cmd>lua require'dap'.step_out()<CR>", opts)
+vim.keymap.set('n', '<Leader>b', "<cmd>lua require'dap'.toggle_breakpoint()<CR>", opts)
+vim.keymap.set('n', '<Leader>B', "<cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>", opts)
