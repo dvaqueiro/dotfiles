@@ -25,7 +25,7 @@ dapui.setup({
         {
             elements = {
                 -- Elements can be strings or table with id and size keys.
-                { id = "scopes", size = 0.25 },
+                -- { id = "scopes", size = 0.25 },
                 "breakpoints",
                 "stacks",
                 "watches",
@@ -35,11 +35,28 @@ dapui.setup({
         },
         {
             elements = {
-                "repl",
-                "console",
+                "scopes"
+               -- "repl",
+               -- "console",
             },
-            size = 0.25, -- 25% of total lines
+            size = 0.30, -- 30% of total lines
             position = "bottom",
+        },
+    },
+    controls = {
+        -- Requires Neovim nightly (or 0.8 when released)
+        enabled = true,
+        -- Display controls in this element
+        element = "repl",
+        icons = {
+            pause = "",
+            play = "",
+            step_into = "",
+            step_over = "",
+            step_out = "",
+            step_back = "",
+            run_last = "",
+            terminate = "",
         },
     },
     floating = {
@@ -60,13 +77,17 @@ dap.listeners.after.event_initialized["dapui_config"] = function()
   dapui.open()
 end
 dap.listeners.before.event_terminated["dapui_config"] = function()
-    print('terminate')
   dapui.close()
 end
 dap.listeners.before.event_exited["dapui_config"] = function()
-    print('exited')
   dapui.close()
 end
+
+-- vim.fn.sign_define('DapBreakpoint', {text='🔴', texthl='', linehl='', numhl=''})
+vim.fn.sign_define('DapBreakpoint', {text='📍', texthl='', linehl='', numhl=''})
+-- vim.fn.sign_define('DapBreakpoint', {text='📌', texthl='', linehl='', numhl=''})
+-- vim.fn.sign_define('DapStopped',{ text ='▶️', texthl ='', linehl ='', numhl =''})
+vim.fn.sign_define('DapStopped',{ text ='➔', texthl ='', linehl ='', numhl =''})
 
 require("nvim-dap-virtual-text").setup({
   enabled = true,                        -- enable this plugin (the default)
@@ -98,13 +119,9 @@ dap.configurations.php = {
     request = 'launch',
     name = 'Listen for Xdebug',
     port = 9003,
-    log = true
+    log = true,
+    pathMappings = {
+        ["/var/www/html"] = "${workspaceFolder}"
+    }
   }
 }
-
-vim.keymap.set('n', '<F5>', "<cmd>lua require'dap'.continue()<CR>")
-vim.keymap.set('n', '<F10>', "<cmd>lua require'dap'.step_over()<CR>")
-vim.keymap.set('n', '<F11>', "<cmd>lua require'dap'.step_out()<CR>")
-vim.keymap.set('n', '<F12>', "<cmd>lua require'dap'.step_into()<CR>")
-vim.keymap.set('n', '<Leader>b', "<cmd>lua require'dap'.toggle_breakpoint()<CR>")
-vim.keymap.set('n', '<Leader>B', "<cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>")
