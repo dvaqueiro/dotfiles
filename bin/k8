@@ -1,0 +1,36 @@
+#!/bin/bash
+
+k8:select_po() {
+    echo `kubectl get po | awk '{if (NR!=1) print $1}' | fzf --height 50%`
+}
+
+command="$1"
+
+k8:choose_opt() {
+    opt=$'lf pod logs follow\nl pod logs\nc pod connect shell\nd pod describe\nni list node ips'
+    echo "$opt" | fzf | awk '{print $1}'
+}
+
+if [ "$1" == "" ]; then
+    command=$(k8:choose_opt)
+fi
+
+if [ "$command" == "lf" ]; then
+    kubectl logs -f $(k8:select_po)
+fi
+
+if [ "$command" == "l" ]; then
+    kubectl logs $(k8:select_po)
+fi
+
+if [ "$command" == "c" ]; then
+    kubectl exec -it $(k8:select_po) -- bash
+fi
+
+if [ "$command" == "d" ]; then
+    kubectl describe po $(k8:select_po)
+fi
+
+if [ "$command" == "ni" ]; then
+    kubectl get nodes -o wide | awk '{if (NR!=1) print $6}'
+fi

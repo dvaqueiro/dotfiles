@@ -137,3 +137,5 @@ function gitdiff() {
       tr -d '\n' |
       pbcopy
 }
+
+alias k8lf='k8 lf'
