@@ -38,6 +38,7 @@ if has("nvim")
    Plug 'rafamadriz/friendly-snippets'
    Plug 'NTBBloodbath/rest.nvim'
    Plug 'sunjon/shade.nvim'
+   Plug 'Pocco81/auto-save.nvim'
 endif
 
 call plug#end()
