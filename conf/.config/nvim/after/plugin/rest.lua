@@ -33,4 +33,5 @@ require("rest-nvim").setup({
     yank_dry_run = true,
 })
 
-vim.keymap.set('n', '<C-j>', "<cmd>lua require('rest-nvim').run()<CR>")
+vim.keymap.set('n', '<leader>r', "<cmd>lua require('rest-nvim').run()<CR>")
+vim.keymap.set("n", "<leader>pr", "<Plug>RestNvimPreview", { nowait = true })

@@ -39,7 +39,7 @@ keymap("v", "<leader>ca", "<cmd>Lspsaga code_action<CR>", { silent = true })
 -- Rename
 keymap("n", "rn", "<cmd>Lspsaga rename<CR>", { silent = true })
 -- Show line diagnostics
-keymap("n", "<leader>cd", "<cmd>Lspsaga show_line_diagnostics<CR>", { silent = true })
+keymap("n", "<leader>d", "<cmd>Lspsaga show_line_diagnostics<CR>", { silent = true })
 -- Show cursor diagnostic
 keymap("n", "<leader>cd", "<cmd>Lspsaga show_cursor_diagnostics<CR>", { silent = true })
 -- Diagnsotic jump
