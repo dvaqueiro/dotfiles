@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ prototype.namespace }};
+
+use App\Common\Domain\Bus\Event\EventMessage;
+
+{% for class in prototype.classes %}
+class {{ class.name }} implements EventMessage
+{
+    public function __construct()
+    {
+
+    }
+}
+{% endfor %}

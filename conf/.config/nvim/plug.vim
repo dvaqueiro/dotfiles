@@ -37,8 +37,12 @@ if has("nvim")
    Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
    Plug 'rafamadriz/friendly-snippets'
    Plug 'rest-nvim/rest.nvim'
-   Plug 'sunjon/shade.nvim'
+"   Plug 'sunjon/shade.nvim'
    Plug 'f-person/git-blame.nvim'
+   Plug 'williamboman/mason.nvim', { 'do': ':MasonUpdate' }
+   Plug 'neovim/nvim-lspconfig'
+   Plug 'jose-elias-alvarez/null-ls.nvim'
+   Plug 'MunifTanjim/eslint.nvim'
 endif
 
 call plug#end()

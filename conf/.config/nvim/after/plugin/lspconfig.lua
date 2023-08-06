@@ -50,8 +50,8 @@ for type, icon in pairs(signs) do
 end
 
 vim.diagnostic.config({
-    virtual_text = false,
-    signs = true,
+    virtual_text = true,
+    signs = false,
     underline = true,
     update_in_insert = false,
     severity_sort = true
@@ -159,7 +159,7 @@ require("luasnip.loaders.from_snipmate").lazy_load({paths = "~/.config/nvim/snip
 -- Php
 nvim_lsp.intelephense.setup {
     on_attach = on_attach,
-    capabilities = capabilities
+    -- capabilities = capabilities
 }
 
 nvim_lsp.phpactor.setup {
@@ -175,10 +175,10 @@ nvim_lsp.phpactor.setup {
 -- require'lspconfig'.psalm.setup{}
 
 -- Javascript/Typescript
-require'lspconfig'.tsserver.setup{
-    on_attach = on_attach,
-    capabilities = capabilities
-}
+-- require'lspconfig'.tsserver.setup{
+--     on_attach = on_attach,
+--     capabilities = capabilities
+-- }
 
 -- Bash
 require'lspconfig'.bashls.setup{}
@@ -198,3 +198,12 @@ require'lspconfig'.dockerls.setup{}
         -- }
     -- }
 -- }
+
+require'lspconfig'.eslint.setup({
+  on_attach = function(client, bufnr)
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = bufnr,
+      command = "EslintFixAll",
+    })
+  end,
+})

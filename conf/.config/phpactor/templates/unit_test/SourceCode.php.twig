@@ -9,5 +9,12 @@ use PHPUnit\Framework\TestCase;
 {% for class in prototype.classes %}
 class {{ class.name }} extends TestCase
 {
+    public function testSomething(): void
+    {
+    }
+
+    protected function setUp(): void
+    {
+    }
 }
 {% endfor %}

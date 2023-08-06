@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ prototype.namespace }};
+
+use App\Common\Domain\Bus\Query\Query;
+
+{% for class in prototype.classes %}
+class {{ class.name }} implements Query
+{
+    public function __construct()
+    {
+
+    }
+}
+{% endfor %}

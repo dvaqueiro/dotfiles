@@ -24,7 +24,7 @@ saga.init_lsp_saga({
         sign_priority = 20,
         virtual_text = false,
     },
-    rename_action_quit = '<ESC>',
+    rename_action_quit = '<C-c>',
     code_action_keys = {
         quit = '<ESC>',
         exec = '<CR>',

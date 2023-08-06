@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ prototype.namespace }};
+
+use App\Common\Domain\Bus\Query\QueryHandler;
+
+{% for class in prototype.classes %}
+class {{ class.name }} implements QueryHandler
+{
+    public function __invoke({{ class.name|replace({'Handler': ""}) }} $command): void
+    {
+
+    }
+}
+{% endfor %}

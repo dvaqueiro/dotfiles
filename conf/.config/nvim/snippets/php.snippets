@@ -662,8 +662,12 @@ snippet expe "phpunit expects"
 		->willReturn(${5});
 snippet testcmt "phpunit comment with group"
 	/**
-	* @group ${1}
-	*/
+	 * @group ${1}
+	 */
+snippet @test "phpunit test comment"
+	/**
+	 * @test
+	 */
 snippet fail "$this->fail()"
 	$this->fail(${1});
 snippet marki "$this->markTestIncomplete()"

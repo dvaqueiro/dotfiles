@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ prototype.namespace }};
+
+use App\Common\Domain\Bus\Event\EventHandler;
+
+{% for class in prototype.classes %}
+class {{ class.name }} implements EventHandler
+{
+    public function __invoke(EvenType $event): void
+    {
+
+    }
+}
+{% endfor %}
