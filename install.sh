@@ -77,27 +77,24 @@ installNeovim() {
     printGreenLine "Installing vim plug";
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    }
+}
 
 installDocker() {
     printGreenLine "Installing Docker..."
-    sudo apt-get update
+    sudo apt-get update && \
     sudo apt-get install -y \
-        apt-transport-https \
         ca-certificates \
         curl \
-        gnupg-agent \
-        software-properties-common
-
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo apt-key fingerprint 0EBFCD88
-    sudo add-apt-repository -y \
-        "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-
-    sudo apt-get update
-    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose
-    sudo groupadd docker
+        gnupg \
+        lsb-release && \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    sudo apt-get update && \
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin && \
     sudo usermod -aG docker $USER
+    newgrp docker
 }
 
 installKubectl() {
@@ -126,7 +123,10 @@ installHelm() {
 }
 
 installAwsCli() {
-    sudo apt-get install -y aws-cli
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/var/tmp/awscliv2.zip"
+    unzip /var/tmp/awscliv2.zip
+    sudo /var/tmp/aws/install
+    aws --version
     printGreenLine "Update .aws/config and .aws/credentials files..."
 }
 

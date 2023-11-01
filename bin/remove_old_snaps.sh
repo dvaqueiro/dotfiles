@@ -1,9 +1,9 @@
 #!/bin/bash
 
-sudo apt-get autoremove
-sudo apt-get autoclean
-rm -rf ~/.local/share/Trash/*
-docker system prune
+#sudo apt-get autoremove
+#sudo apt-get autoclean
+#rm -rf ~/.local/share/Trash/*
+#docker system prune
 
 # Removes old revisions of snaps
 # CLOSE ALL SNAPS BEFORE RUNNING THIS

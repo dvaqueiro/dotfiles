@@ -43,6 +43,7 @@ if has("nvim")
    Plug 'neovim/nvim-lspconfig'
    Plug 'jose-elias-alvarez/null-ls.nvim'
    Plug 'MunifTanjim/eslint.nvim'
+   Plug 'github/copilot.vim'
 endif
 
 call plug#end()
