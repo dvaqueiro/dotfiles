@@ -1,0 +1,14 @@
+{
+  "$schema": "/home/dvaqueiro/Documents/dev/phpactor/phpactor.schema.json",
+  "language_server_psalm.enabled": false,
+  "indexer.exclude_patterns": [
+    "/vendor/**/Tests/**/*",
+    "/vendor/**/tests/**/*",
+    "/var/cache/**/*",
+    "/vendor/composer/**/*"
+  ],
+  "language_server_phpstan.enabled": false,
+  "code_transform.class_new.variants": {
+    "default": "class"
+  }
+}

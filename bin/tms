@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ -z "$1" ]
+  then
+    CURRENT=`pwd`
+    BASENAME=`basename "$CURRENT"`
+    UPPER_BASENAME=${BASENAME^^}
+  else
+    cd "$1"
+    BASENAME=`basename "$1"`
+    UPPER_BASENAME=${BASENAME^^}
+fi
+
+tmux new -s "$UPPER_BASENAME" -n "code" -d nvim . &&\
+tmux new-window -t "$UPPER_BASENAME:2" -n "exec" &&\
+tmux new-window -t "$UPPER_BASENAME:3" -n "db" &&\
+tmux new-window -t "$UPPER_BASENAME:4" -n "misc"
+tmux switch -t "$UPPER_BASENAME:1"
+
+exit;

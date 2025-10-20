@@ -108,7 +108,7 @@ alias zshconfig="nvim ~/.zshrc"
 # alias memalloc='util | grep % | awk '\''{print $5}'\'' | awk '\''{ sum += $1 } END { if (NR > 0) { print sum/(NR*75), "%\n" } }'\'''
 
 export HISTFILE=~/.zsh_history  # ensure history file visibility
-export HISTSIZE=9000
+export HISTSIZE=20000
 
 export LESS="-XFR"
 export PATH="$HOME/.symfony/bin:$PATH"
@@ -140,3 +140,7 @@ function gitdiff() {
 }
 
 alias k8lf='k8 lf'
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

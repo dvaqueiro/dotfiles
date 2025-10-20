@@ -1,0 +1,165 @@
+#background_opacity = 0.95
+
+[colors.bright]
+black = "0x444b6a"
+blue = "0x7da6ff"
+cyan = "0x0db9d7"
+green = "0xb9f27c"
+magenta = "0xbb9af7"
+red = "0xff7a93"
+white = "0xacb0d0"
+yellow = "0xff9e64"
+
+[colors.normal]
+black = "0x32344a"
+blue = "0x7aa2f7"
+cyan = "0x449dab"
+green = "0x9ece6a"
+magenta = "0xad8ee6"
+red = "0xf7768e"
+white = "0x9699a8"
+yellow = "0xe0af68"
+
+[colors.primary]
+background = "0x24283b"
+foreground = "0xa9b1d6"
+
+[font]
+size = 14.0
+#use_thin_strokes = false
+
+[font.bold]
+family = "Hack Nerd Font"
+style = "Bold"
+
+[font.bold_italic]
+family = "Hack Nerd Font"
+
+[font.glyph_offset]
+x = 0
+y = 0
+
+[font.italic]
+family = "Hack Nerd Font"
+style = "Italic"
+
+[font.normal]
+family = "Hack Nerd Font"
+style = "Regular"
+
+[font.offset]
+x = 0
+y = 0
+
+#[schemes.gruvbox-dark]
+#foreground = "#ebdbb2"
+#
+#[schemes.gruvbox-dark.bright]
+#black = "#928374"
+#blue = "#83a598"
+#cyan = "#8ec07c"
+#green = "#b8bb26"
+#magenta = "#d3869b"
+#red = "#fb4934"
+#white = "#ebdbb2"
+#yellow = "#fabd2f"
+#
+#[schemes.gruvbox-dark.normal]
+#black = "#282828"
+#blue = "#458588"
+#cyan = "#689d6a"
+#green = "#98971a"
+#magenta = "#b16286"
+#red = "#cc241d"
+#white = "#a89984"
+#yellow = "#d79921"
+#
+#[schemes.gruvbox-dark.primary]
+#background = "#282828"
+#
+#[schemes.gruvbox-light.bright]
+#black = "#928374"
+#blue = "#076678"
+#cyan = "#427b58"
+#green = "#79740e"
+#magenta = "#8f3f71"
+#red = "#9d0006"
+#white = "#3c3836"
+#yellow = "#b57614"
+#
+#[schemes.gruvbox-light.normal]
+#black = "#fbf1c7"
+#blue = "#458588"
+#cyan = "#689d6a"
+#green = "#98971a"
+#magenta = "#b16286"
+#red = "#cc241d"
+#white = "#7c6f64"
+#yellow = "#d79921"
+#
+#[schemes.gruvbox-light.primary]
+#background = "#fbf1c7"
+#foreground = "#3c3836"
+#
+#[schemes.tokyo-night.bright]
+#black = "0x444b6a"
+#blue = "0x7da6ff"
+#cyan = "0x0db9d7"
+#green = "0xb9f27c"
+#magenta = "0xbb9af7"
+#red = "0xff7a93"
+#white = "0xacb0d0"
+#yellow = "0xff9e64"
+#
+#[schemes.tokyo-night.normal]
+#black = "0x32344a"
+#blue = "0x7aa2f7"
+#cyan = "0x449dab"
+#green = "0x9ece6a"
+#magenta = "0xad8ee6"
+#red = "0xf7768e"
+#white = "0x787c99"
+#yellow = "0xe0af68"
+#
+#[schemes.tokyo-night.primary]
+#background = "0x1a1b26"
+#foreground = "0xa9b1d6"
+#
+#[schemes.tokyo-night-storm.bright]
+#black = "0x444b6a"
+#blue = "0x7da6ff"
+#cyan = "0x0db9d7"
+#green = "0xb9f27c"
+#magenta = "0xbb9af7"
+#red = "0xff7a93"
+#white = "0xacb0d0"
+#yellow = "0xff9e64"
+#
+#[schemes.tokyo-night-storm.normal]
+#black = "0x32344a"
+#blue = "0x7aa2f7"
+#cyan = "0x449dab"
+#green = "0x9ece6a"
+#magenta = "0xad8ee6"
+#red = "0xf7768e"
+#white = "0x9699a8"
+#yellow = "0xe0af68"
+#
+#[schemes.tokyo-night-storm.primary]
+#background = "0x24283b"
+#foreground = "0xa9b1d6"
+
+[scrolling]
+history = 10000
+
+[shell]
+args = ["-l", "-c", "tmux attach || tmux"]
+program = "/bin/zsh"
+
+[window]
+decorations = "none"
+startup_mode = "Maximized"
+
+[window.padding]
+x = 10
+y = 10

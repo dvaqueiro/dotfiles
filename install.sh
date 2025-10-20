@@ -3,7 +3,10 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
-SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )" || exit 1
+SCRIPTPATH="$(
+    cd -- "$(dirname "$0")" >/dev/null 2>&1
+    pwd -P
+)" || exit 1
 
 printRedLine() {
     printf "${RED}$1${NC}\n"
@@ -74,36 +77,36 @@ installNeovim() {
     sudo apt-get update
     sudo apt-get install -y neovim
 
-    printGreenLine "Installing vim plug";
+    printGreenLine "Installing vim plug"
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 }
 
 installDocker() {
     printGreenLine "Installing Docker..."
-    sudo apt-get update && \
-    sudo apt-get install -y \
-        ca-certificates \
-        curl \
-        gnupg \
-        lsb-release && \
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-    sudo apt-get update && \
-    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin && \
-    sudo usermod -aG docker $USER
+    sudo apt-get update &&
+        sudo apt-get install -y \
+            ca-certificates \
+            curl \
+            gnupg \
+            lsb-release &&
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg &&
+        echo \
+            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null &&
+        sudo apt-get update &&
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin &&
+        sudo usermod -aG docker $USER
     newgrp docker
 }
 
 installKubectl() {
     printGreenLine "Installing kubectl..."
     sudo apt-get update &&
-    sudo apt-get install -y apt-transport-https ca-certificates curl &&
-    sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" \
-        | sudo tee /etc/apt/sources.list.d/kubernetes.list
+        sudo apt-get install -y apt-transport-https ca-certificates curl &&
+        sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" |
+        sudo tee /etc/apt/sources.list.d/kubernetes.list
 
     sudo apt-get update
     sudo apt-get install -y kubectl
@@ -137,8 +140,12 @@ installVarious() {
 
 stowDirs() {
     sudo apt-get install -y stow &&
-    cd "$SCRIPTPATH" &&
-    stow conf
+        cd "$SCRIPTPATH" &&
+        stow nvim &&
+        stow alacritty &&
+        stow phpactor &&
+        stow others_dot --dotfiles &&
+        stow vim
 }
 
 installOhMyZsh
