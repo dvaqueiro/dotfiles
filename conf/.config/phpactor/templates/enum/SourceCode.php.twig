@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace {{ prototype.namespace }};
 
 {% for class in prototype.classes %}
-class {{ class.name }}
+enum {{ class.name }}: string
 {
-    public function __construct()
-    {
-    }
+    case EXAMPLE = 'example';
+    case ANOTHER = 'another';
 }
 {% endfor %}

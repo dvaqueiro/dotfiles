@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace {{ prototype.namespace }};
 
-use App\Common\Domain\Bus\Command\CommandHandler;
+use App\Shared\Domain\Bus\Command\CommandHandler;
 
 {% for class in prototype.classes %}
 class {{ class.name }} implements CommandHandler
 {
     public function __invoke({{ class.name|replace({'Handler': ""}) }} $command): void
     {
-
     }
 }
 {% endfor %}

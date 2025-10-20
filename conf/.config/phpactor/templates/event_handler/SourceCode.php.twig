@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace {{ prototype.namespace }};
 
-use App\Common\Domain\Bus\Event\EventHandler;
+use App\Shared\Domain\Bus\Event\EventMessage;
 
 {% for class in prototype.classes %}
 class {{ class.name }} implements EventHandler
