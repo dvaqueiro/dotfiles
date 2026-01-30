@@ -1,190 +1,157 @@
 #!/bin/bash
 
-set -e # El script se detiene si algo falla
-
+# --- CONFIGURACIÓN Y COLORES ---
+set -e
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-NC='\033[0m' # No Color
-SCRIPTPATH="$(
-    cd -- "$(dirname "$0")" >/dev/null 2>&1
-    pwd -P
-)" || exit 1
+NC='\033[0m'
+SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 && pwd -P)"
+STATE_DIR="$HOME/.dotfiles_state"
+mkdir -p "$STATE_DIR"
 
-printRedLine() {
-    printf "${RED}$1${NC}\n"
+# --- FUNCIONES DE UTILIDAD ---
+printGreenLine() { printf "${GREEN}$1${NC}\n"; }
+printRedLine() { printf "${RED}$1${NC}\n"; }
+
+# El "corazón" de la idempotencia
+run_step() {
+    local step_name=$1
+    local step_func=$2
+    if [ -f "$STATE_DIR/$step_name" ]; then
+        printGreenLine ">> [SKIP] Paso '$step_name' ya completado."
+    else
+        printGreenLine ">> [EXEC] Ejecutando: $step_name..."
+        if $step_func; then
+            touch "$STATE_DIR/$step_name"
+            printGreenLine ">> [OK] Paso '$step_name' finalizado."
+        else
+            printRedLine "!! [ERROR] Fallo en: $step_name"
+            exit 1
+        fi
+    fi
 }
 
-printGreenLine() {
-    printf "${GREEN}$1${NC}\n"
+# --- FUNCIONES DE INSTALACIÓN ---
+installBasics() {
+    sudo apt-get update
+    sudo apt-get install -y zsh curl wget git stow unzip build-essential software-properties-common ripgrep fonts-powerline fonts-hack-ttf
 }
 
 installOhMyZsh() {
-    printGreenLine "Installing oh-my-zsh"
-    sudo apt-get install -y zsh curl wget
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
-    if [ ! -f ~/.zshrc_original ]; then
-        mv ~/.zshrc ~/.zshrc_original
+    if [ ! -d "$HOME/.oh-my-zsh" ]; then
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     fi
-    chsh -s /usr/bin/zsh
+    # Intentar cambiar shell sin bloquear por contraseña si es posible
+    sudo chsh -s /usr/bin/zsh "$USER" || printRedLine "Manual step: run 'chsh -s /usr/bin/zsh'"
 }
 
 installOhMyZshPlugins() {
-    printGreenLine "Installing oh-my-zsh-plugins..."
-    PLUGPATH=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-    [ ! -d "$PLUGPATH" ] && git clone https://github.com/zsh-users/zsh-autosuggestions "$PLUGPATH"
-    PLUGPATH=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-    [ ! -d "$PLUGPATH" ] && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$PLUGPATH"
+    local PLUG_DIR=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins
+    [ ! -d "$PLUG_DIR/zsh-autosuggestions" ] && git clone https://github.com/zsh-users/zsh-autosuggestions "$PLUG_DIR/zsh-autosuggestions"
+    [ ! -d "$PLUG_DIR/zsh-syntax-highlighting" ] && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$PLUG_DIR/zsh-syntax-highlighting"
     return 0
 }
 
-installFzf() {
-    if [ ! -d "$HOME/.fzf" ]; then
-        printGreenLine "Installing fzf..."
-        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-        ~/.fzf/install --all
+installTmux() {
+    sudo apt-get install -y tmux
+    # Nuevo del .md: Tmux Plugin Manager
+    if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+        printGreenLine "Instalando TPM (Tmux Plugin Manager)..."
+        git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
     fi
 }
 
-installAlacritty() {
-    printGreenLine "Installing alacritty from official repos..."
-    sudo apt-get install -y alacritty fonts-hack-ttf
-}
-
-installTmux() {
-    printGreenLine "Installing tmux..."
-    sudo apt install -y tmux
-}
-
-installMycli() {
-    printGreenLine "Installing mycli..."
-    sudo apt-get install -y python3-pip
-    pip3 install mycli
-}
-
-installPhpAndComposer() {
-    printGreenLine 'Installing php and composer globally...'
-    sudo apt-get install -y php php-xml php-curl php-zip php-mbstring phpmd php-codesniffer
-    curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
-}
-
-installPhpactor() {
-    printGreenLine "Instalando Phpactor..."
-    # Se instala vía composer globalmente o en una ruta específica
-    composer global require phpactor/phpactor --dev
-}
-
 installNode() {
-    curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
+    printGreenLine "Instalando Node.js v20..."
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
     sudo apt-get install -y nodejs
-}
-
-installVim() {
-    printGreenLine "Instalando Vim..."
-    sudo apt-get install -y vim
+    sudo npm install -g tldr
 }
 
 installNeovim() {
-    sudo apt-get install -y universal-ctags
-    printGreenLine "Installing neovim..."
     sudo add-apt-repository -y ppa:neovim-ppa/stable
     sudo apt-get update
-    sudo apt-get install -y neovim
+    sudo apt-get install -y neovim python3-pip
+    pip3 install --user --upgrade pynvim --break-system-packages || true
 
-    printGreenLine "Installing vim plug"
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+}
+
+installFzf() {
+    [ -d "$HOME/.fzf" ] && rm -rf "$HOME/.fzf"
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install --all
+}
+
+installTools() {
+    # Alacritty, Tmux, tldr
+    sudo apt-get install -y alacritty tmux tldr fonts-hack-ttf
+    sudo apt-get install -y python3-pip
+    pip3 install mycli --break-system-packages || printRedLine "Fallo mycli, continuando..."
+}
+
+installPhpStack() {
+    sudo apt-get install -y php php-xml php-curl php-zip php-mbstring phpmd php-codesniffer
+    curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+    # Phpactor global
+    /usr/local/bin/composer global require phpactor/phpactor --dev || true
 }
 
 installDocker() {
-    printGreenLine "Installing Docker..."
-    sudo apt-get update &&
-        sudo apt-get install -y \
-            ca-certificates \
-            curl \
-            gnupg \
-            lsb-release &&
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg &&
-        echo \
-            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null &&
-        sudo apt-get update &&
-        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin &&
-        sudo usermod -aG docker $USER
-}
-
-installKubectl() {
-    printGreenLine "Installing kubectl..."
-    sudo apt-get update &&
-        sudo apt-get install -y apt-transport-https ca-certificates curl &&
-        sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" |
-        sudo tee /etc/apt/sources.list.d/kubernetes.list
-
+    sudo install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
     sudo apt-get update
-    sudo apt-get install -y kubectl
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    sudo usermod -aG docker "$USER"
 }
 
-installHelm() {
-    printGreenLine "Installing Helm 3..."
+installK8s() {
+    # Kubectl
+    sudo curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    sudo apt-get update && sudo apt-get install -y kubectl
+
+    # Helm 3
     curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg >/dev/null
-    sudo apt-get install apt-transport-https --yes
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-    sudo apt-get update
-    sudo apt-get install -y helm
+    sudo apt-get update && sudo apt-get install -y helm
 }
 
-installAwsCli() {
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/var/tmp/awscliv2.zip"
-    unzip /var/tmp/awscliv2.zip
-    sudo /var/tmp/aws/install
-    aws --version
-    printGreenLine "Update .aws/config and .aws/credentials files..."
-}
-
-installVarious() {
-    sudo apt-get install -y tldr
-    printGreenLine "Installl various terminal apps"
+installAws() {
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+    unzip -q /tmp/awscliv2.zip -d /tmp
+    sudo /tmp/aws/install --update
 }
 
 stowDirs() {
-    printGreenLine "Enlazando configuraciones con GNU Stow..."
     cd "$SCRIPTPATH"
+    mkdir -p ~/.config/alacritty ~/.config/nvim ~/.config/phpactor
 
-    mkdir -p ~/.config/alacritty
-    mkdir -p ~/.config/nvim
+    # Forzamos borrado de archivos default que bloquean a Stow
+    [ -f ~/.zshrc ] && [ ! -L ~/.zshrc ] && mv ~/.zshrc ~/.zshrc.bak
 
-    stow -R zsh
+    stow -R zshrc
     stow -R tmux
     stow -R nvim
     stow -R alacritty
     stow -R phpactor
     stow -R vim
-
-    printGreenLine "¡Configuraciones enlazadas!"
 }
 
-checkSecrets() {
-    printRedLine "RECUERDA: Falta configurar manualmente:"
-    echo "1. Llaves SSH en ~/.ssh/"
-    echo "2. Credenciales AWS en ~/.aws/credentials"
-    echo "3. Configuración de Kubernetes en ~/.kube/config"
-}
+# --- EJECUCIÓN DEL SCRIPT ---
+run_step "Basics" installBasics
+run_step "OhMyZsh" installOhMyZsh
+run_step "ZshPlugins" installOhMyZshPlugins
+run_step "Fzf" installFzf
+run_step "Tools" installTools
+run_step "PhpStack" installPhpStack
+run_step "Node" installNode
+run_step "Neovim" installNeovim
+run_step "Docker" installDocker
+run_step "Kubernetes" installK8s
+run_step "AwsCli" installAws
+run_step "StowLinks" stowDirs
 
-installOhMyZsh
-installOhMyZshPlugins
-installFzf
-installAlacritty
-installTmux
-installMycli
-installPhpAndComposer
-installPhpactor
-installNode
-installVim
-installNeovim
-installAwsCli
-installDocker
-installKubectl
-installHelm
-installVarious
-stowDirs
-checkSecrets
+printGreenLine "\n¡SISTEMA LISTO!"
+printRedLine "Reinicia la sesión para aplicar cambios."

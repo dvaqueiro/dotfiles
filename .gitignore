@@ -1,3 +1,4 @@
 conf/.vim/autoload
 conf/.vim/plugged
 tags
+.dotfiles_state/
