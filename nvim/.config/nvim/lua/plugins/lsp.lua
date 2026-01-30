@@ -9,7 +9,7 @@ return {
 
     -- Useful status updates for LSP.
     -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-    { 'j-hui/fidget.nvim', opts = {} },
+    { 'j-hui/fidget.nvim',       opts = {} },
 
     -- Allows extra capabilities provided by nvim-cmp
     'hrsh7th/cmp-nvim-lsp',
@@ -22,8 +22,14 @@ return {
           mode = mode or 'n'
           vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
+        local client = vim.lsp.get_client_by_id(event.data.client_id)
+        if client and client.name == 'phpactor' then
+          client.server_capabilities.referencesProvider = false
+        end
         --  To jump back, press <C-t>.
         map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+        -- NUEVO ATAJO para probar la función nativa
+        -- map('gd', vim.lsp.buf.definition, '[G]oto [N]ative [D]efinition')
         -- Find references for the word under your cursor.
         map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
         -- Jump to the implementation of the word under your cursor.
@@ -126,6 +132,19 @@ return {
       sqls = {},
       jsonls = {},
       yamlls = {},
+      intelephense = {
+        init_options = {
+          -- Limita intelephense a un máximo de 2 hilos (cores)
+          threads = 2,
+        },
+      },
+      phpactor = {
+        -- Deshabilita el formateo para evitar conflictos con otras herramientas
+        capabilities = {
+          documentFormattingProvider = false,
+          documentRangeFormattingProvider = false,
+        },
+      },
     }
 
     -- Ensure the servers and tools above are installed
@@ -145,15 +164,14 @@ return {
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
     require('mason-lspconfig').setup {
-      handlers = {
-        function(server_name)
-          local server = servers[server_name] or {}
-          -- This handles overriding only values explicitly passed
-          -- by the server configuration above. Useful when disabling
-          -- certain features of an LSP (for example, turning off formatting for tsserver)
-          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-        end,
-      },
+      handlers = function(server_name)
+        local server = servers[server_name] or {}
+        -- This handles overriding only values explicitly passed
+        -- by the server configuration above. Useful when disabling
+        -- certain features of an LSP (for example, turning off formatting for tsserver)
+        server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+        require('lspconfig')[server_name].setup(server)
+      end,
     }
   end,
 }

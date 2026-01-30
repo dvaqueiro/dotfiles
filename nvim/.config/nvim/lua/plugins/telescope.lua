@@ -48,6 +48,15 @@ return {
       -- You can put your default mappings / updates / etc. in here
       --  All the info you're looking for is in `:help telescope.setup()`
       defaults = {
+        attach_mappings = function(prompt_bufnr, map)
+          local actions = require 'telescope.actions'
+
+          -- Mapeo para enviar a la quickfix list (ver Solución 2)
+          map('i', '<C-q>', actions.send_to_qflist + actions.close)
+          map('n', '<C-q>', actions.send_to_qflist + actions.close)
+
+          return true
+        end,
         mappings = {
           i = {
             ['<C-k>'] = require('telescope.actions').move_selection_previous, -- move to prev result

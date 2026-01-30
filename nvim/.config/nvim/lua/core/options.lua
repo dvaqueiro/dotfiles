@@ -43,6 +43,8 @@ vim.opt.formatoptions:remove { 'c', 'r', 'o' } -- Don't insert the current comme
 vim.opt.runtimepath:remove '/usr/share/vim/vimfiles' -- Separate Vim plugins from Neovim in case Vim still in use (default: includes this path if Vim is installed)
 vim.opt.showbreak = '↪'
 vim.opt.guifont = 'Hack 14'
+vim.o.autowrite = true -- Enable auto write
+vim.o.hidden = true -- Permite cambiar de buffer sin guardar (los cambios no se pierden)
 
 -- remove trailing whitespace when saving files
 -- vim.cmd(autocmd BufWritePre *.php :%s/\s\+$//e) For php files only

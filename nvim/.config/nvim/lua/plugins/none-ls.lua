@@ -6,22 +6,22 @@ return {
   },
   config = function()
     local null_ls = require 'null-ls'
-    local formatting = null_ls.builtins.formatting   -- to setup formatters
+    local formatting = null_ls.builtins.formatting -- to setup formatters
     local diagnostics = null_ls.builtins.diagnostics -- to setup linters
 
     -- Formatters & linters for mason to install
     require('mason-null-ls').setup {
       ensure_installed = {
-        'prettier',  -- ts/js formatter
-        'stylua',    -- lua formatter
-        'eslint_d',  -- ts/js linter
-        'shfmt',     -- Shell formatter
+        'prettier', -- ts/js formatter
+        'stylua', -- lua formatter
+        'eslint_d', -- ts/js linter
+        'shfmt', -- Shell formatter
         'checkmake', -- linter for Makefiles
         -- 'ruff', -- Python linter and formatter
         'phpcs',
         -- 'phpmd',
         'phpstan',
-        'phpactor',
+        -- 'phpactor',
         'intelephense',
       },
       automatic_installation = true,
@@ -39,12 +39,13 @@ return {
       --diagnostics.psalm,
       --diagnostics.phpmd,
       diagnostics.phpstan,
-      --diagnostics.intelephense,
     }
 
     local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
     null_ls.setup {
-      debug = true, -- Enable debug mode. Inspect logs with :NullLsLog.
+      debug = false, -- Enable debug mode. Inspect logs with :NullLsLog.
+      temp_dir = vim.fn.stdpath 'cache' .. '/none-ls-temp',
+
       sources = sources,
       -- you can reuse a shared lspconfig on_attach callback here
       on_attach = function(client, bufnr)
