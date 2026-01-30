@@ -117,6 +117,9 @@ export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 export PATH="$HOME/Documents/dev/phpactor/bin:$PATH"
 export PATH="$HOME/.symfony5/bin:$PATH"
 
+# Asegurar que el PATH sea único (evita duplicados si recargas la shell)
+typeset -U path
+
 #export DEVOPS_PATH=/home/dvaqueiro/projects/devops
 
 # --files: List files that would be searched but do not search
@@ -141,6 +144,7 @@ function gitdiff() {
 
 alias k8lf='k8 lf'
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# Load local settings (not versioned)
+if [ -f ~/.zshrc.local ]; then
+    source ~/.zshrc.local
+fi

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e # El script se detiene si algo falla
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
@@ -36,16 +38,16 @@ installOhMyZshPlugins() {
 }
 
 installFzf() {
-    printGreenLine "Installing fzf, a fuzzy finder...."
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    ~/.fzf/install
+    if [ ! -d "$HOME/.fzf" ]; then
+        printGreenLine "Installing fzf..."
+        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+        ~/.fzf/install --all
+    fi
 }
 
 installAlacritty() {
-    printGreenLine "Installing alacritty..."
-    sudo apt-get install -y fonts-hack-ttf
-    sudo add-apt-repository -y ppa:mmstick76/alacritty
-    sudo apt-get install -y alacritty
+    printGreenLine "Installing alacritty from official repos..."
+    sudo apt-get install -y alacritty fonts-hack-ttf
 }
 
 installTmux() {
@@ -65,9 +67,20 @@ installPhpAndComposer() {
     curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
 }
 
+installPhpactor() {
+    printGreenLine "Instalando Phpactor..."
+    # Se instala vía composer globalmente o en una ruta específica
+    composer global require phpactor/phpactor --dev
+}
+
 installNode() {
     curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
     sudo apt-get install -y nodejs
+}
+
+installVim() {
+    printGreenLine "Instalando Vim..."
+    sudo apt-get install -y vim
 }
 
 installNeovim() {
@@ -97,7 +110,6 @@ installDocker() {
         sudo apt-get update &&
         sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin &&
         sudo usermod -aG docker $USER
-    newgrp docker
 }
 
 installKubectl() {
@@ -113,16 +125,12 @@ installKubectl() {
 }
 
 installHelm() {
-    # Helm3
-    #curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
-    #sudo apt-get install apt-transport-https --yes
-    #echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-    #sudo apt-get update
-    #sudo apt-get install -y helm
-
-    # Helm2
-    curl -LO https://git.io/get_helm.sh
-    ./get_helm.sh --version v2.16.1
+    printGreenLine "Installing Helm 3..."
+    curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg >/dev/null
+    sudo apt-get install apt-transport-https --yes
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+    sudo apt-get update
+    sudo apt-get install -y helm
 }
 
 installAwsCli() {
@@ -139,13 +147,27 @@ installVarious() {
 }
 
 stowDirs() {
-    sudo apt-get install -y stow &&
-        cd "$SCRIPTPATH" &&
-        stow nvim &&
-        stow alacritty &&
-        stow phpactor &&
-        stow others_dot --dotfiles &&
-        stow vim
+    printGreenLine "Enlazando configuraciones con GNU Stow..."
+    cd "$SCRIPTPATH"
+
+    mkdir -p ~/.config/alacritty
+    mkdir -p ~/.config/nvim
+
+    stow -R zsh
+    stow -R tmux
+    stow -R nvim
+    stow -R alacritty
+    stow -R phpactor
+    stow -R vim
+
+    printGreenLine "¡Configuraciones enlazadas!"
+}
+
+checkSecrets() {
+    printRedLine "RECUERDA: Falta configurar manualmente:"
+    echo "1. Llaves SSH en ~/.ssh/"
+    echo "2. Credenciales AWS en ~/.aws/credentials"
+    echo "3. Configuración de Kubernetes en ~/.kube/config"
 }
 
 installOhMyZsh
@@ -155,7 +177,9 @@ installAlacritty
 installTmux
 installMycli
 installPhpAndComposer
+installPhpactor
 installNode
+installVim
 installNeovim
 installAwsCli
 installDocker
@@ -163,4 +187,4 @@ installKubectl
 installHelm
 installVarious
 stowDirs
-exit 0
+checkSecrets
