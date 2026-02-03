@@ -69,7 +69,8 @@ installNode() {
 }
 
 installNeovim() {
-    sudo add-apt-repository -y ppa:neovim-ppa/stable
+    printGreenLine "Instalando Neovim (Rama de desarrollo para compatibilidad total)..."
+    sudo add-apt-repository -y ppa:neovim-ppa/unstable
     sudo apt-get update
     sudo apt-get install -y neovim python3-pip
     pip3 install --user --upgrade pynvim --break-system-packages || true
@@ -84,17 +85,22 @@ installFzf() {
 }
 
 installTools() {
-    # Alacritty, Tmux, tldr
-    sudo apt-get install -y alacritty tmux tldr fonts-hack-ttf
+    # Alacritty, Tmux
+    sudo apt-get install -y alacritty tmux fonts-hack-ttf
     sudo apt-get install -y python3-pip
     pip3 install mycli --break-system-packages || printRedLine "Fallo mycli, continuando..."
 }
 
 installPhpStack() {
+    printGreenLine "Instalando PHP y Composer..."
     sudo apt-get install -y php php-xml php-curl php-zip php-mbstring phpmd php-codesniffer
+
     curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
-    # Phpactor global
-    /usr/local/bin/composer global require phpactor/phpactor --dev || true
+
+    printGreenLine "Instalando binario de Phpactor..."
+    curl -Lo /tmp/phpactor.phar https://github.com/phpactor/phpactor/releases/latest/download/phpactor.phar
+    sudo chmod +x /tmp/phpactor.phar
+    sudo mv /tmp/phpactor.phar /usr/local/bin/phpactor
 }
 
 installDocker() {
@@ -107,15 +113,17 @@ installDocker() {
 }
 
 installK8s() {
-    # Kubectl
-    sudo curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-    echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-    sudo apt-get update && sudo apt-get install -y kubectl
+    if ! command -v kubectl &>/dev/null; then
+        sudo curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+        echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+        sudo apt-get update && sudo apt-get install -y kubectl
+    fi
 
-    # Helm 3
-    curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg >/dev/null
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-    sudo apt-get update && sudo apt-get install -y helm
+    printGreenLine "Instalando Helm 3 vía script oficial..."
+    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    chmod 700 get_helm.sh
+    ./get_helm.sh
+    rm get_helm.sh
 }
 
 installAws() {
@@ -131,7 +139,7 @@ stowDirs() {
     # Forzamos borrado de archivos default que bloquean a Stow
     [ -f ~/.zshrc ] && [ ! -L ~/.zshrc ] && mv ~/.zshrc ~/.zshrc.bak
 
-    stow -R zshrc
+    stow -R zsh
     stow -R tmux
     stow -R nvim
     stow -R alacritty
