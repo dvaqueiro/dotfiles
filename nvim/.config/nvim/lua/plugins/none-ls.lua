@@ -59,6 +59,9 @@ return {
             group = augroup,
             buffer = bufnr,
             callback = function()
+              if vim.bo[bufnr].filetype == 'yaml' then
+                return
+              end
               vim.lsp.buf.format { async = false }
             end,
           })
