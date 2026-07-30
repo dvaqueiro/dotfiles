@@ -299,18 +299,51 @@ note() {
     fi
 }
 
-# Comando inteligente para commits con Gemini
-function gcai() {
-    # 1. Comprobar si hay cambios cacheados
+# Comando inteligente para commits con Gemini y selector de modelos
+function gcomm() {
+# 1. Comprobar si hay cambios cacheados
     if git diff --cached --quiet; then
         echo "❌ No hay archivos en el stage. Usa 'git add' primero."
         return 1
     fi
 
-    echo "🤖 Analizando diff con Gemini..."
+    # 2. Selector interactivo de modelos
+    echo "Elige el modelo de Gemini a usar:"
+    local models=("Por defecto del CLI (Recomendado)" "Flash exacto (001)" "Flash exacto (002)" "Cancelar")
+    local selected_model=""
+    local api_model=""
 
-    # 2. Enviar el diff a Gemini y guardar la respuesta en el archivo temporal de Git
-    git diff --cached | gemini -p "Actúa como un desarrollador Senior. Escribe un mensaje de commit usando la convención de Conventional Commits (ej. feat:, fix:, test:, chore:).
+    select opt in "${models[@]}"; do
+        case $REPLY in
+            1)
+                selected_model="CLI Default"
+                api_model="" # Lo dejamos vacío para no forzar el flag -m
+                break
+                ;;
+            2)
+                selected_model="Flash-001"
+                api_model="gemini-1.5-flash-001"
+                break
+                ;;
+            3)
+                selected_model="Flash-002"
+                api_model="gemini-1.5-flash-002"
+                break
+                ;;
+            4)
+                echo "Operación cancelada."
+                return 0
+                ;;
+            *)
+                echo "Opción invalida."
+                ;;
+        esac
+    done
+
+    echo "🤖 Analizando diff con Gemini ($selected_model)..."
+
+    # 3. Enviar el diff al modelo seleccionado
+    git diff --cached | gemini -m "$api_model" -p "Actúa como un desarrollador Senior. Escribe un mensaje de commit usando la convención de Conventional Commits (ej. feat:, fix:, test:, chore:).
     El mensaje debe estar en INGLÉS.
     Formato requerido:
     1. Una primera línea corta con el tipo y la descripción.
@@ -321,6 +354,12 @@ function gcai() {
 
     Devuelve ÚNICAMENTE el texto crudo del commit. Nada de saludos, ni bloques de código markdown (\`\`\`)." > .git/COMMIT_EDITMSG
 
-    # 3. Lanzar Git usando ese archivo y abriendo tu editor ($EDITOR / Neovim)
+    # 4. Comprobar si la llamada falló o el archivo está vacío
+    if [[ ! -s .git/COMMIT_EDITMSG ]]; then
+        echo "❌ Error: La API no devolvió contenido o falló (revisa el log de arriba). Abortando."
+        return 1
+    fi
+
+    # 5. Lanzar Git
     git commit -e -F .git/COMMIT_EDITMSG
 }
