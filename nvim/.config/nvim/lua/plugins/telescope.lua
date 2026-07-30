@@ -48,6 +48,16 @@ return {
       -- You can put your default mappings / updates / etc. in here
       --  All the info you're looking for is in `:help telescope.setup()`
       defaults = {
+        path_display = { 'shorten' },
+        dynamic_preview_title = true,
+        layout_strategy = 'horizontal',
+        layout_config = {
+          horizontal = {
+            width = 0.95,
+            preview_width = 0.50,
+            results_width = 0.50,
+          },
+        },
         attach_mappings = function(prompt_bufnr, map)
           local actions = require 'telescope.actions'
 

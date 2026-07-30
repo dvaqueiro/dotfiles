@@ -84,6 +84,10 @@ else
    export EDITOR='nvim'
 fi
 
+if [[ -f ~/.zsh_secrets ]]; then
+    source ~/.zsh_secrets
+fi
+
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
@@ -97,6 +101,9 @@ fi
 #
 # Example aliases
 alias zshconfig="nvim ~/.zshrc"
+alias hadolint="docker run --rm -i hadolint/hadolint <"
+alias tm="tmux attach || tmux"
+alias oc="opencommit"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # alias util='kubectl get nodes --no-headers | awk '\''{print $1}'\'' | xargs -I {} sh -c '\''echo {} ; kubectl describe node {} | grep Allocated -A 5 | grep -ve Event -ve Allocated -ve percent -ve -- ; echo '\'''
@@ -116,6 +123,7 @@ export PATH="$HOME/.dotfiles/bin:$PATH"
 export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 export PATH="$HOME/Documents/dev/phpactor/bin:$PATH"
 export PATH="$HOME/.symfony5/bin:$PATH"
+export PATH="$HOME/.npm-global/bin:$PATH"
 
 # Asegurar que el PATH sea único (evita duplicados si recargas la shell)
 typeset -U path
@@ -142,9 +150,177 @@ function gitdiff() {
       pbcopy
 }
 
+# ------------------------------------------------------------------
+# TMUX WORKSPACE AUTOMATION (CON FZF)
+# ------------------------------------------------------------------
+function workon() {
+    local PROJECTS_DIR="$HOME/Documents/dev/boardfy/"
+    local DEVOPS_DIR="$HOME/Documents/dev/boardfy/devops/"
+
+    local project_dir
+    local project_name
+
+    if [ "$#" -eq 0 ]; then
+        # Buscamos carpetas en tu directorio de proyectos (solo 1 nivel de profundidad) y se las pasamos a fzf
+        project_dir=$(find "$PROJECTS_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | fzf --prompt="🚀 Selecciona proyecto: " --height=40% --layout=reverse --border --info=inline)
+
+        # Si el usuario pulsa ESC o Ctrl+C para cancelar fzf
+        if [ -z "$project_dir" ]; then
+            return 0
+        fi
+
+        # Extraemos el nombre de la carpeta como nombre del proyecto
+        project_name=$(basename "$project_dir")
+
+    # 2. MODO MANUAL (Con argumentos -> workon <nombre> <ruta>)
+    elif [ "$#" -eq 2 ]; then
+        project_name=$1
+        project_dir=$2
+    else
+        echo "❌ Uso manual: workon <nombre_proyecto> <ruta>"
+        echo "💡 Uso interactivo: Solo escribe 'workon'"
+        return 1
+    fi
+
+    # Limpiamos el nombre para Tmux (a Tmux no le gustan los puntos en los nombres de sesión)
+    project_name=$(echo "$project_name" | tr '.' '_')
+
+    # Navegamos al directorio
+    cd "$project_dir" || return 1
+
+    # Comprobamos si la sesión ya existe para no pisarla
+    if ! tmux has-session -t "$project_name" 2>/dev/null; then
+        echo "🚀 Levantando infraestructura para: $project_name..."
+        # Ventana 1: Código (crea la sesión en background)
+        tmux new-session -d -s "$project_name" -n "code"
+        # Ventana 2: Tests
+        tmux new-window -t "$project_name":2 -n "tests"
+        tmux split-window -t "$SESSION_NAME:2" -v
+        # Ventana 3: BBDD
+        tmux new-window -t "$project_name":3 -n "bbdd"
+        # Ventana 5: DevOps (Ruta forzada con -c)
+        tmux new-window -t "$project_name":4 -n "devops" -c "$DEVOPS_DIR"
+        # Ventana 5: Varios
+        tmux new-window -t "$project_name":5 -n "ramdom"
+        # Volvemos a la pestaña de código para empezar
+        tmux select-window -t "$project_name":1
+    fi
+
+    # Lógica de conexión inteligente (con atajo para evitar errores visuales)
+    if [ -z "$TMUX" ]; then
+        tmux attach -t "$project_name"
+    else
+        tmux switch-client -t "$project_name"
+    fi
+}
+
+# ------------------------------------------------------------------
+# TMUX WORKSPACE TEARDOWN
+# ------------------------------------------------------------------
+function workoff() {
+    local session_name
+
+    # 1. Si le pasas un nombre a mano (ej: workoff backend)
+    if [ "$#" -eq 1 ]; then
+        session_name=$1
+    # 2. Si no le pasas nombre, pero lo ejecutas DENTRO del proyecto
+    elif [ -n "$TMUX" ]; then
+        session_name=$(tmux display-message -p '#S')
+    else
+        echo "❌ No estás en Tmux o no has especificado qué proyecto cerrar."
+        echo "💡 Uso: workoff <nombre_proyecto> (o ejecuta 'workoff' dentro de la sesión)"
+        return 1
+    fi
+
+    # Confirmación de seguridad para evitar accidentes
+    echo -n "⚠️ ¿Seguro que quieres destruir el workspace '$session_name' y cerrar sus ventanas? (y/n): "
+    read -r confirm
+    if [[ "$confirm" =~ ^[YySsiI] ]]; then
+        echo "💥 Destruyendo sesión '$session_name'..."
+
+        # 🚀 LA MEJORA SRE: Si estamos dentro de Tmux y en la sesión activa,
+        # saltamos a la siguiente sesión disponible antes de destruirla.
+        if [ -n "$TMUX" ]; then
+            local current_session
+            current_session=$(tmux display-message -p '#S')
+            if [ "$current_session" = "$session_name" ]; then
+                tmux switch-client -n 2>/dev/null
+            fi
+        fi
+
+        # Ahora sí, borramos la sesión de forma segura
+        tmux kill-session -t "$session_name"
+        echo "✅ Proyecto cerrado limpiamente."
+    else
+        echo "🛑 Abortado. Tu proyecto sigue vivo."
+    fi
+}
+
 alias k8lf='k8 lf'
 
 # Load local settings (not versioned)
 if [ -f ~/.zshrc.local ]; then
     source ~/.zshrc.local
 fi
+
+# ------------------------------------------------------------------
+# CONFIGURACIÓN KEYCHAIN (Limpia y Robusta)
+# ------------------------------------------------------------------
+unset SSH_ASKPASS
+
+if [ -n "$TMUX" ]; then
+    # 1. ESTAMOS DENTRO DE TMUX (restaurando paneles):
+    # Heredamos la conexión en silencio.
+    eval $(keychain --eval --agents ssh)
+else
+    # 2. ESTAMOS FUERA DE TMUX (Alacritty o Tilix base):
+    # Cargamos la llave principal y pedimos la clave de forma segura en la terminal.
+    eval $(keychain --eval --agents ssh id_bfy_master)
+fi
+
+note() {
+    # Directorio donde vivirán tus notas (cámbialo al que prefieras)
+    local notes_dir="$HOME/.notes"
+    mkdir -p "$notes_dir"
+
+    # Archivo diario (ej: 2026-07-23.md)
+    local filename="$notes_dir/notes.md"
+
+    # Si tienes la variable $EDITOR configurada a nvim, la usará. Si no, forzamos nvim.
+    local editor=${EDITOR:-nvim}
+
+    if [ -z "$1" ]; then
+        # Sin argumentos: abre Neovim en el archivo de hoy
+        $editor "$filename"
+    else
+        # Con argumentos: añade una línea con la hora y tu nota
+        echo "- **$(date +%H:%M):** $*" >> "$filename"
+        echo "✅ Nota guardada en $filename"
+    fi
+}
+
+# Comando inteligente para commits con Gemini
+function gcai() {
+    # 1. Comprobar si hay cambios cacheados
+    if git diff --cached --quiet; then
+        echo "❌ No hay archivos en el stage. Usa 'git add' primero."
+        return 1
+    fi
+
+    echo "🤖 Analizando diff con Gemini..."
+
+    # 2. Enviar el diff a Gemini y guardar la respuesta en el archivo temporal de Git
+    git diff --cached | gemini -p "Actúa como un desarrollador Senior. Escribe un mensaje de commit usando la convención de Conventional Commits (ej. feat:, fix:, test:, chore:).
+    El mensaje debe estar en INGLÉS.
+    Formato requerido:
+    1. Una primera línea corta con el tipo y la descripción.
+    2. Una línea en blanco.
+    3. Un resumen para dar contexto de los cambios
+    4. Una línea en blanco.
+    5. Una explicación detallada en viñetas sobre el 'qué' y el 'por qué' de los cambios.
+
+    Devuelve ÚNICAMENTE el texto crudo del commit. Nada de saludos, ni bloques de código markdown (\`\`\`)." > .git/COMMIT_EDITMSG
+
+    # 3. Lanzar Git usando ese archivo y abriendo tu editor ($EDITOR / Neovim)
+    git commit -e -F .git/COMMIT_EDITMSG
+}

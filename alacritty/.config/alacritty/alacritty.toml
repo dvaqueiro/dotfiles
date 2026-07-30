@@ -6,7 +6,7 @@ blue = "0x7da6ff"
 cyan = "0x0db9d7"
 green = "0xb9f27c"
 magenta = "0xbb9af7"
-red = "0xff7a93"
+red = "0xff4d4d"
 white = "0xacb0d0"
 yellow = "0xff9e64"
 
@@ -16,7 +16,7 @@ blue = "0x7aa2f7"
 cyan = "0x449dab"
 green = "0x9ece6a"
 magenta = "0xad8ee6"
-red = "0xf7768e"
+red = "0xcc0000"
 white = "0x9699a8"
 yellow = "0xe0af68"
 
@@ -153,8 +153,8 @@ y = 0
 history = 10000
 
 [shell]
-args = ["-l", "-c", "tmux attach || tmux"]
 program = "/bin/zsh"
+args = ["-l"]
 
 [window]
 decorations = "none"
