@@ -310,40 +310,11 @@ function gcomm() {
     # 2. Selector interactivo de modelos
     echo "Elige el modelo de Gemini a usar:"
     local models=("Por defecto del CLI (Recomendado)" "Flash exacto (001)" "Flash exacto (002)" "Cancelar")
-    local selected_model=""
-    local api_model=""
 
-    select opt in "${models[@]}"; do
-        case $REPLY in
-            1)
-                selected_model="CLI Default"
-                api_model="" # Lo dejamos vacío para no forzar el flag -m
-                break
-                ;;
-            2)
-                selected_model="Flash-001"
-                api_model="gemini-1.5-flash-001"
-                break
-                ;;
-            3)
-                selected_model="Flash-002"
-                api_model="gemini-1.5-flash-002"
-                break
-                ;;
-            4)
-                echo "Operación cancelada."
-                return 0
-                ;;
-            *)
-                echo "Opción invalida."
-                ;;
-        esac
-    done
+    echo "🤖 Analizando diff con Gemini 3.5 Flash..."
 
-    echo "🤖 Analizando diff con Gemini ($selected_model)..."
-
-    # 3. Enviar el diff al modelo seleccionado
-    git diff --cached | gemini -m "$api_model" -p "Actúa como un desarrollador Senior. Escribe un mensaje de commit usando la convención de Conventional Commits (ej. feat:, fix:, test:, chore:).
+    # 3. Construir el prompt
+    local prompt="Actúa como un desarrollador Senior. Escribe un mensaje de commit usando la convención de Conventional Commits (ej. feat:, fix:, test:, chore:).
     El mensaje debe estar en INGLÉS.
     Formato requerido:
     1. Una primera línea corta con el tipo y la descripción.
@@ -352,14 +323,16 @@ function gcomm() {
     4. Una línea en blanco.
     5. Una explicación detallada en viñetas sobre el 'qué' y el 'por qué' de los cambios.
 
-    Devuelve ÚNICAMENTE el texto crudo del commit. Nada de saludos, ni bloques de código markdown (\`\`\`)." > .git/COMMIT_EDITMSG
+    Devuelve ÚNICAMENTE el texto crudo del commit. Nada de saludos, ni bloques de código markdown (\`\`\`)."
 
-    # 4. Comprobar si la llamada falló o el archivo está vacío
+    git diff --cached | gemini --skip-trust -m "gemini-3.1-flash-lite" -p "$prompt" > .git/COMMIT_EDITMSG
+
+    # 5. Comprobar si la llamada falló o el archivo está vacío
     if [[ ! -s .git/COMMIT_EDITMSG ]]; then
         echo "❌ Error: La API no devolvió contenido o falló (revisa el log de arriba). Abortando."
         return 1
     fi
 
-    # 5. Lanzar Git
+    # 6. Lanzar Git
     git commit -e -F .git/COMMIT_EDITMSG
 }
