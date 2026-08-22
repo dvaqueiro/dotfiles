@@ -72,9 +72,8 @@ installNeovim() {
     printGreenLine "Instalando Neovim (Rama de desarrollo para compatibilidad total)..."
     sudo add-apt-repository -y ppa:neovim-ppa/unstable
     sudo apt-get update
-    sudo apt-get install -y neovim python3-pip
-    pip3 install --user --upgrade pynvim --break-system-packages || true
-
+    sudo apt-get install -y neovim python3-pynvim
+    printGreenLine "Instalando Vim-Plug..."
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 }
 
@@ -85,10 +84,10 @@ installFzf() {
 }
 
 installTools() {
-    # Alacritty, Tmux
-    sudo apt-get install -y alacritty tmux fonts-hack-ttf
-    sudo apt-get install -y python3-pip
-    pip3 install mycli --break-system-packages || printRedLine "Fallo mycli, continuando..."
+    printGreenLine "Instalando herramientas y pipx..."
+    sudo apt-get install -y alacritty tmux fonts-hack-ttf pipx
+    pipx ensurepath
+    pipx install mycli || printRedLine "Fallo mycli, continuando..."
 }
 
 installPhpStack() {
