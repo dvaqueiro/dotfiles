@@ -299,8 +299,76 @@ note() {
     fi
 }
 
-# Comando inteligente para commits con Gemini y selector de modelos
+# Comando inteligente para commits con Gemini y revisión de código
 function gcomm() {
+    # 1. Comprobar si hay cambios cacheados
+    if git diff --cached --quiet; then
+        echo "❌ No hay archivos en el stage. Usa 'git add' primero."
+        return 1
+    fi
+
+    # --- NUEVO: FASE DE REVISIÓN DE CÓDIGO ---
+    echo "🔍 Analizando el diff en busca de errores evidentes o código olvidado..."
+
+    local review_prompt="Actúa como un revisor de código muy estricto. Revisa este git diff. Busca ÚNICAMENTE errores de sintaxis, código de depuración olvidado (como console.log, var_dump, dd(), debugger) o fallos lógicos muy evidentes. Si encuentras algo de esto, explícalo brevemente. Si el código parece correcto, responde EXACTAMENTE y ÚNICAMENTE con la palabra 'OK'."
+
+    # Guardamos la respuesta de la IA en una variable
+    local review_result=$(git diff --cached | gemini --skip-trust -m "gemini-3.1-flash-lite" -p "$review_prompt")
+
+    # Limpiamos posibles saltos de línea o espacios extra que meta la IA
+    review_result=$(echo "$review_result" | xargs)
+
+    # Si la respuesta NO es "OK", mostramos la advertencia
+    if [[ "$review_result" != "OK" && "$review_result" != "OK." ]]; then
+        echo "\n⚠️  ¡Ojo! Se han detectado posibles problemas en tu código:\n"
+        echo "$review_result"
+        echo "\n----------------------------------------"
+
+        # Preguntamos si quiere continuar (read -q es nativo de Zsh para inputs de 1 caracter)
+        if read -q "?¿Quieres continuar con el commit de todos modos? (y/N) "; then
+            echo "\n\nContinuando..."
+        else
+            echo "\n\n❌ Commit abortado para que puedas revisar el código."
+            return 1
+        fi
+    else
+        echo "✅ Código limpio. Ningún error evidente detectado."
+    fi
+    # --- FIN FASE DE REVISIÓN ---
+
+    # 2. Selector interactivo (Nota: lo tenías declarado pero sin lógica de selección, lo dejo como lo tenías)
+    echo "Elige el modelo de Gemini a usar:"
+    local models=("Por defecto del CLI (Recomendado)" "Flash exacto (001)" "Flash exacto (002)" "Cancelar")
+
+    echo "🤖 Generando mensaje de commit..."
+
+    # 3. Construir el prompt del commit
+    local commit_prompt="Actúa como un desarrollador Senior. Escribe un mensaje de commit usando la convención de Conventional Commits (ej. feat:, fix:, test:, chore:).
+    El mensaje debe estar en INGLÉS.
+    Formato requerido:
+    1. Una primera línea corta con el tipo y la descripción.
+    2. Una línea en blanco.
+    3. Un resumen para dar contexto de los cambios
+    4. Una línea en blanco.
+    5. Una explicación detallada en viñetas sobre el 'qué' y el 'por qué' de los cambios.
+
+    Devuelve ÚNICAMENTE el texto crudo del commit. Nada de saludos, ni bloques de código markdown (\`\`\`)."
+
+    # 4. Generar el mensaje
+    git diff --cached | gemini --skip-trust -m "gemini-3.1-flash-lite" -p "$commit_prompt" > .git/COMMIT_EDITMSG
+
+    # 5. Comprobar si la llamada falló o el archivo está vacío
+    if [[ ! -s .git/COMMIT_EDITMSG ]]; then
+        echo "❌ Error: La API no devolvió contenido o falló. Abortando."
+        return 1
+    fi
+
+    # 6. Lanzar Git
+    git commit -e -F .git/COMMIT_EDITMSG
+}
+
+# Comando inteligente para commits con Gemini y selector de modelos
+function gcomm_old() {
 # 1. Comprobar si hay cambios cacheados
     if git diff --cached --quiet; then
         echo "❌ No hay archivos en el stage. Usa 'git add' primero."

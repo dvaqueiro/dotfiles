@@ -28,6 +28,7 @@ require('lazy').setup {
   require 'plugins.copilot',
   require 'plugins.rest',
   require 'plugins.dap',
+  require 'plugins.render-markdown',
 }
 
 vim.cmd [[colorscheme tokyonight-storm]]
