@@ -127,7 +127,28 @@ return {
       ts_ls = {}, -- tsserver is deprecated
       html = { filetypes = { 'html', 'twig', 'hbs' } },
       cssls = {},
-      tailwindcss = {},
+      tailwindcss = {
+        -- Only start in projects that actually use Tailwind.
+        -- Upstream falls back to `.git`, which starts it in every repository.
+        root_dir = function(bufnr, on_dir)
+          local fname = vim.api.nvim_buf_get_name(bufnr)
+          local root_files = {
+            'tailwind.config.js',
+            'tailwind.config.cjs',
+            'tailwind.config.mjs',
+            'tailwind.config.ts',
+            'postcss.config.js',
+            'postcss.config.cjs',
+            'postcss.config.mjs',
+            'postcss.config.ts',
+          }
+          root_files = require('lspconfig.util').insert_package_json(root_files, 'tailwindcss', fname)
+          local found = vim.fs.find(root_files, { path = fname, upward = true })[1]
+          if found then
+            on_dir(vim.fs.dirname(found))
+          end
+        end,
+      },
       dockerls = {},
       sqls = {},
       jsonls = {},
@@ -139,11 +160,12 @@ return {
         },
       },
       phpactor = {
-        -- Deshabilita el formateo para evitar conflictos con otras herramientas
-        capabilities = {
-          documentFormattingProvider = false,
-          documentRangeFormattingProvider = false,
-        },
+        -- Deshabilita el formateo para evitar conflictos con otras herramientas.
+        -- Son capacidades del servidor, así que se apagan al iniciar, no en `capabilities`.
+        on_init = function(client)
+          client.server_capabilities.documentFormattingProvider = false
+          client.server_capabilities.documentRangeFormattingProvider = false
+        end,
       },
     }
 
@@ -163,15 +185,13 @@ return {
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-    require('mason-lspconfig').setup {
-      handlers = function(server_name)
-        local server = servers[server_name] or {}
-        -- This handles overriding only values explicitly passed
-        -- by the server configuration above. Useful when disabling
-        -- certain features of an LSP (for example, turning off formatting for tsserver)
-        server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-        require('lspconfig')[server_name].setup(server)
-      end,
-    }
+    -- mason-lspconfig v2 dropped `handlers`: it enables every installed server with
+    -- `vim.lsp.enable()`. Register our overrides first so that call picks them up.
+    for server_name, server in pairs(servers) do
+      server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      vim.lsp.config(server_name, server)
+    end
+
+    require('mason-lspconfig').setup()
   end,
 }

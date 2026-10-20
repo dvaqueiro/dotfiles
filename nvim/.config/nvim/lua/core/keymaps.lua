@@ -76,3 +76,5 @@ end, {})
 
 -- Mismo atajo sugerido
 vim.keymap.set('n', '<leader>cp', ':CopyPHPClass<CR>', { desc = 'Copiar PHP Class path' })
+
+vim.keymap.set('t', '<C-w>', '<C-\\><C-n><C-w>', { desc = 'Navegación de ventanas desde terminal' })
